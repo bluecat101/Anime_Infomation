@@ -6,8 +6,11 @@ class View extends JFrame{
   public View(Model m, String title){
     this.setTitle(title);
     model = m;
+    this.setLayout(new GridLayout(1,2));
     SearchPanel searchPanel = new SearchPanel();
+    SearchPanel searchPanel_2 = new SearchPanel();
     this.add(searchPanel);
+    this.add(searchPanel_2);
     
     this.setSize(600,400);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -19,7 +22,10 @@ class SearchPanel extends JPanel{
 	public SearchPanel(){
 		JPanel panel = new JPanel();
     JTextField text = new JTextField(10);
+    JLabel label = new JLabel("ANIME title");
+    panel.setLayout(new GridLayout(2,1));
+    panel.add(label);
     panel.add(text);
-    this.add(panel, BorderLayout.CENTER);
+    this.add(panel);
 	}
 }
