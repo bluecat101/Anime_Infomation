@@ -1,10 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
 import java.net.*;
-import java.io.*;
 import java.util.*;
 
+
+
 class Main{
+  public static final String STATUS = "develop";
   public static void main(String argv[]){
     Model m =new Model(getAnimeDB());
 
@@ -12,43 +14,14 @@ class Main{
     new Controller(m,v);
   }
   private static java.util.List<String> getAnimeDB(){
-    java.util.List<String> contents = new ArrayList<String>();
-    try{
+    if (STATUS == "develop"){
       Url url = new Url();
-      contents = url.getHTML("https://cal.syoboi.jp/list");
-      // for(String line: contents){
-      //   System.out.println(line);
-      // }
-        // System.out.println(contents.get(1));
-
-    }catch(Exception error){
-      error.printStackTrace();
-      System.out.println("can't accsecc anime DataBase");
+      return url.connectHttp("https://cal.syoboi.jp/list");
+    }else{
+      java.util.List<String> contents = new ArrayList<String>();
+      return contents;
     }
-    return contents;
-  }  
-}
-
-
-
-  
-
-
-
-class Url {
-  public Url(){}
-  java.util.List<String> getHTML(String url) throws Exception {
-    URL url_ob = new URI(url).toURL();
-    try(
-      InputStream is = url_ob.openStream();
-      InputStreamReader isr = new InputStreamReader(is);
-      BufferedReader br = new BufferedReader(isr)){
-      java.util.List<String> list = new ArrayList<String>();
-        String line = null;
-        while((line = br.readLine()) != null){
-          list.add(line);
-        }
-        return list;
-    }
+    
   }
+   
 }
