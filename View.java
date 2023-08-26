@@ -3,11 +3,12 @@ import java.awt.*;
 
 class View extends JFrame{
   private Model model;
+  private SearchPanel searchPanel;
   public View(Model m, String title){
     this.setTitle(title);
     model = m;
     this.setLayout(new GridLayout(1,2));
-    SearchPanel searchPanel = new SearchPanel();
+    searchPanel = new SearchPanel();
     SearchPanel searchPanel_2 = new SearchPanel();
     this.add(searchPanel);
     this.add(searchPanel_2);
@@ -16,16 +17,34 @@ class View extends JFrame{
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setVisible(true);
   }
+  public String getSearchText(){
+    return searchPanel.getSearchText();
+  }
+  public JButton getSearchButton(){
+    return searchPanel.getSearchButton();
+  }
 }
 class SearchPanel extends JPanel{
   JButton []btn = new JButton[5];//ボタン配列
+  JButton button;
+  JTextField text;
 	public SearchPanel(){
 		JPanel panel = new JPanel();
-    JTextField text = new JTextField(10);
+    text = new JTextField(10);
     JLabel label = new JLabel("ANIME title");
-    panel.setLayout(new GridLayout(2,1));
+    JLabel dummy = new JLabel("");
+    button = new JButton("検索");
+    panel.setLayout(new GridLayout(2,2));
     panel.add(label);
+    panel.add(dummy);
     panel.add(text);
+    panel.add(button);
     this.add(panel);
 	}
+  public String getSearchText(){
+    return text.getText();
+  }
+  public JButton getSearchButton(){
+    return button;
+  }
 }
