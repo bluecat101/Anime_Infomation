@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+
 class Controller implements ActionListener{
   private Model model;
   private View view;
