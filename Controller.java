@@ -1,5 +1,5 @@
 import javax.swing.*;
-import java.awt.*;
+// import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
@@ -21,12 +21,7 @@ class Controller implements ActionListener{
     // int tid = animeTIDDB.searchTID(view.getSearchText());
     int tid = model.searchTID(view.getSearchText());
     System.out.println(tid);
-    
-    Url url = new Url();
-    java.util.List<String> contents = new ArrayList<String>();
-    contents = url.connectHttp("https://cal.syoboi.jp/db.php?Command=TitleLookup&TID="+tid);
-    for(String list: contents){
-      System.out.println(list);
-    }
+    String[] animeDetail = model.getAnimeDetailByTID(tid);
   }
+  
 }
