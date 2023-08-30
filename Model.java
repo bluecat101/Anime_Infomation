@@ -32,12 +32,12 @@ class Model{
     animeDetail[0] = title_production[0];
     animeDetail[1] = String.valueOf(tid);
     animeDetail[2] = title_production[1];
-    for(Map.Entry<String,ArrayList<String>> data: seiyuu.entrySet()) {
-      System.out.println(data.getKey());
-      for(String character: data.getValue()){
-        System.out.println("    "+character);
-      }
-    }
+    // for(Map.Entry<String,ArrayList<String>> data: seiyuu.entrySet()) {
+    //   System.out.println(data.getKey());
+    //   for(String character: data.getValue()){
+    //     System.out.println("    "+character);
+    //   }
+    // }
     return animeDetail;
 
 
@@ -108,6 +108,23 @@ class Model{
   public int searchTID(String title){
     return animeTIDDB.get(title);
   }
+
+  public ArrayList<String> searchDAnimeStore(String searchKey) {
+    ArrayList<String> searchSuggestions =new ArrayList<String>();
+    Url url = new Url();
+    List<String> contents = new ArrayList<String>();
+    contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/rest/WS000105?length=20&mainKeyVisualSize=2&searchKey=" + searchKey + "&vodTypeList=svod_tvod&_=1693395247779");
+    
+    Pattern p_title = Pattern.compile("\"workTitle\":\"(.*?)\"");
+    Matcher m_title = p_title.matcher(contents.get(0));
+
+    while(m_title.find()){
+      // System.out.println(m_title.group(1));
+      searchSuggestions.put(m_title.group(1));
+    }
+    return searchSuggestions;
+  }
+
   public void addSeiyuu(List<String> seiyuu){
 
   }

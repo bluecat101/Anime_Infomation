@@ -16,10 +16,10 @@ class Url {
     return contents;
   }
 
-  public java.util.List<String> getHTML(String url) throws Exception {
-    URL url_ob = new URI(url).toURL();
+  public java.util.List<String> getHTML(String uri) throws Exception {
+    URL url = new URI(uri).toURL();
     try(
-      InputStream is = url_ob.openStream();
+      InputStream is = url.openStream();
       InputStreamReader isr = new InputStreamReader(is);
       BufferedReader br = new BufferedReader(isr)){
       java.util.List<String> list = new ArrayList<String>();

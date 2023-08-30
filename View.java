@@ -48,3 +48,14 @@ class SearchPanel extends JPanel{
     return button;
   }
 }
+
+// class SearchResultPanel extends JPanel {
+//   // String title = new String();
+//   public SearchResultPanel(String title,String production){
+//     // this.title = title;
+//     JLabel l_title  = title
+//     JLabel l_productipn = production;
+//     JButton b_favorite = new JButton();
+    
+//   }
+// }
