@@ -1,5 +1,12 @@
 import java.util.*;
 import java.util.regex.*;
+// import javax.imageio.ImageIO;
+// import javax.swing.ImageIcon;
+import java.awt.Image;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+
 
 class Model{
   Map<String,Integer> animeTIDDB = new HashMap<>();
@@ -109,20 +116,50 @@ class Model{
     return animeTIDDB.get(title);
   }
 
-  public ArrayList<String> searchDAnimeStore(String searchKey) {
-    ArrayList<String> searchSuggestions =new ArrayList<String>();
+  public ArrayList<String[]> searchDAnimeStore(String searchKey) {
+    ArrayList<String[]> searchSuggestions =new ArrayList<String[]>();
     Url url = new Url();
     List<String> contents = new ArrayList<String>();
     contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/rest/WS000105?length=20&mainKeyVisualSize=2&searchKey=" + searchKey + "&vodTypeList=svod_tvod&_=1693395247779");
-    
-    Pattern p_title = Pattern.compile("\"workTitle\":\"(.*?)\"");
+    Pattern p_title = Pattern.compile("\"workId\":\"([0-9]+)\",\"workInfo\":\\{\"workTitle\":\"(.*?)\"");
     Matcher m_title = p_title.matcher(contents.get(0));
-
+    
     while(m_title.find()){
-      // System.out.println(m_title.group(1));
-      searchSuggestions.put(m_title.group(1));
+      searchSuggestions.add(new String[]{m_title.group(1),m_title.group(2)});
     }
+    
     return searchSuggestions;
+  }
+  public Image getAnimeImage(int searchID) throws IOException{
+    Url url = new Url();
+    List<String> contents = new ArrayList<String>();
+    // System.out.println(searchID);
+    contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/ci?workId=" + searchID);
+
+    Pattern p_image = Pattern.compile("<meta property=og:image content=\"(.*)\"/>");
+    Matcher m_image = p_image.matcher(contents.get(0));
+    // URL image_url = new Url();
+    // try(){
+    Image image = ImageIO.read(new File("no_image.png"));
+    // Image Image=null;
+
+    for(String line: contents){
+      m_image = p_image.matcher(line);
+      if (m_image.find()){
+        try{
+          image = url.getImage(m_image.group(1));
+        }catch(Exception error){
+
+        }
+        // return image;
+      }
+    }
+    // }catch(IOException e) {}
+    return image;
+    // Image image = ImageIO.read(image_url);
+    // }
+    
+
   }
 
   public void addSeiyuu(List<String> seiyuu){

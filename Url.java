@@ -1,6 +1,8 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.awt.Image;
+import javax.imageio.ImageIO;
 
 class Url {
   public Url(){}
@@ -29,5 +31,9 @@ class Url {
         }
         return list;
     }
+  }
+  public Image getImage(String uri)throws Exception {
+    URL url = new URI(uri).toURL();
+    return ImageIO.read(url);
   }
 }

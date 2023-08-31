@@ -26,8 +26,13 @@ class Controller implements ActionListener{
 
     //dアニメストア検索
     try{
-      ArrayList<String> searchSuggestions = model.searchDAnimeStore(URLEncoder.encode(view.getSearchText(), "UTF-8")); // dアニメストア検索
+      ArrayList<String[]> searchSuggestions = model.searchDAnimeStore(URLEncoder.encode(view.getSearchText(), "UTF-8")); // dアニメストア検索
       // view.searchSuggestionsPanel(searchSuggestions);
+      int searchID =  Integer.valueOf(searchSuggestions.get(1)[0]) ;
+      try{
+      view.showImage(model.getAnimeImage(searchID));
+
+      }catch(Exception error){}
     } catch (UnsupportedEncodingException error) {
 
     }
