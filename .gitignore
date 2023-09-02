@@ -7,3 +7,12 @@
 /mainPanel.class
 /Url.class
 /no_image.png
+/Api.class
+/youtube.properties
+/src/main/resources/client_secret.json
+/gradle
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
