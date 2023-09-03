@@ -13,6 +13,7 @@ class Model{
   ArrayList<ArrayList<String[]>> seiyuu_character = new ArrayList<>();
   Map<String,ArrayList<String>> seiyuu = new HashMap<>();
   ArrayList<ArrayList<String>> favoriteAnime = new ArrayList<>();
+  Map<String,Integer> tmpSearchSuggestions = new HashMap<>();
   public Model(List<String> contents){
     searchAnimeTID(contents);
   }
@@ -161,7 +162,18 @@ class Model{
     
 
   }
-
+  public void resetTmpSearchSuggetions(){
+    tmpSearchSuggestions.clear();
+  }
+  public void setTmpSearchSuggetions(ArrayList<String[]> searchSuggestions){
+    resetTmpSearchSuggetions();
+    for (String[] data: searchSuggestions){
+      tmpSearchSuggestions.put(data[1],Integer.parseInt(data[0]));
+    }
+  }
+  public Map<String,Integer>  getTmpSearchSuggestions(){
+    return tmpSearchSuggestions;
+  }
   public void addSeiyuu(List<String> seiyuu){
 
   }
