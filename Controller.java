@@ -20,17 +20,14 @@ class Controller implements ActionListener{
   public void actionPerformed(ActionEvent e){
     System.out.println(e);
     System.out.println(e.getActionCommand());
-    //// int tid = animeTIDDB.searchTID(view.getSearchText()); //TIDDB検索,すでに存在する場合??
-    // int tid = model.searchTID(view.getSearchText()); // tid検索
-    // System.out.println(tid);
-    // String[] animeDetail = model.getAnimeDetailByTID(tid); //詳細取得
+
+
 
     //dアニメストア検索
     if(e.getSource() == view.getSearchButton()){
       try{
         ArrayList<String[]> searchSuggestions = model.searchDAnimeStore(URLEncoder.encode(view.getSearchText(), "UTF-8")); //[0]id,[1]title
-        // view.searchSuggestionsPanel(searchSuggestions);
-        int searchID =  Integer.valueOf(searchSuggestions.get(1)[0]) ;
+        
         try{
         // view.showImage(model.getAnimeImage(searchID)); //画像表示
         model.setTmpSearchSuggetions(searchSuggestions);
@@ -43,7 +40,23 @@ class Controller implements ActionListener{
       }
     }else if(model.getTmpSearchSuggestions().containsKey(e.getActionCommand())){
       System.out.println("click");
-
+      
+      String[] animeDetail = model.getAnimeDetail(e.getActionCommand()); //詳細取得
+        // for(String data: animeDetail){
+        //   System.out.println(data);
+        // }
+      /*
+      #### //-----------tidを用いた検索-----------//
+      ####    // int tid = animeTIDDB.searchTID(view.getSearchText()); //TIDDB検索,すでに存在する場合??
+      ####  // int tid = model.searchTID(e.getActionCommand()); // tid検索
+      ####  // System.out.println(tid);
+      ####  // String[] animeDetail = model.getAnimeDetailByTID(tid); //詳細取得
+      ####  // for(String data: animeDetail){
+      ####  // System.out.println(data);
+      ####  // }
+      #### //----------------------//
+      */
+      // model.getAnimeDetailByDAS(Integer.parseInt(model.getTmpSearchSuggestions().get(e.getActionCommand())));
     }
     
 

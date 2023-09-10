@@ -24,6 +24,7 @@ class Model{
       match = pattern.matcher(line);
       if (match.find()){
         setAnimeTIDDB(Integer.parseInt(match.group(1)),match.group(2));
+        // System.out.println(match.group(2));
       }
     }
   }
@@ -126,10 +127,71 @@ class Model{
     Matcher m_title = p_title.matcher(contents.get(0));
     
     while(m_title.find()){
-      searchSuggestions.add(new String[]{m_title.group(1),m_title.group(2)});
+      System.out.println(m_title.group(2));
+      if(checkTitle(m_title.group(2))){
+        searchSuggestions.add(new String[]{m_title.group(1),m_title.group(2)});
+      }
     }
     
     return searchSuggestions;
+  }
+  public int getDAnimeID(String title){
+    return tmpSearchSuggestions.get(title);
+  }
+
+  public String[] getAnimeDetail(String title){
+    String[] animeDetail = new String[2];
+    int id = getDAnimeID(title);
+    Url url = new Url();
+    List<String> contents = new ArrayList<String>();
+    
+    contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/ci_pc?workId=" + id);
+    searchAnimeSeiyuuCaracterByDAnimeContents(contents);
+    animeDetail[0] = title;
+    animeDetail[1] = String.valueOf(id);
+    for(Map.Entry<String,ArrayList<String>> data: seiyuu.entrySet()) {
+      System.out.println(data.getKey());
+      for(String character: data.getValue()){
+        System.out.println("    "+character);
+      }
+    }
+    return animeDetail;
+  }
+  //空:松岡禎丞／白:茅野愛衣
+  public void searchAnimeSeiyuuCaracterByDAnimeContents(List<String> contents){
+    ArrayList<String[]> seiyuu_character_unit = new ArrayList<>();
+    Pattern pattern = Pattern.compile("(.*?):(.*?)(／|$)");
+    Matcher match;
+    boolean is_seiyuu_character = false;
+    Pattern p_start = Pattern.compile("\\<p\\>\\[キャスト\\]\\<br\\>");
+    Matcher m_start;
+    for(String line: contents){
+      if (is_seiyuu_character){
+        match = pattern.matcher(line);
+        while(match.find()){
+          seiyuu_character_unit.add(new String[] {match.group(1), match.group(2)});
+          if(seiyuu.containsKey(match.group((2)))){
+            seiyuu.get(match.group(2)).add(match.group(1));
+          }else{
+            ArrayList<String> tmp = new ArrayList<>();
+            tmp.add(match.group(1));
+            seiyuu.put(match.group(2),tmp);
+          }
+          System.out.println("(" + match.group(1)+"   "+ match.group(2) + ")"+ match.start()+ "   " + match.end());
+
+        }
+      break;
+      }else{
+        m_start = p_start.matcher(line);
+        if (m_start.find()){
+          is_seiyuu_character = true;
+        }
+        
+      }
+    }
+    seiyuu_character.add(seiyuu_character_unit);
+
+    // return seiyuu_character;
   }
   public Image getAnimeImage(int searchID) throws IOException{
     Url url = new Url();
@@ -174,6 +236,18 @@ class Model{
   public Map<String,Integer>  getTmpSearchSuggestions(){
     return tmpSearchSuggestions;
   }
+  public boolean checkTitle(String title){
+    return animeTIDDB.containsKey(title);
+  }
+  public void getAnimeDetailByDAS(int id){
+    Url url = new Url();
+    List<String> contents = new ArrayList<String>();
+    // System.out.println(searchID);
+    contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/ci_pc?workId="+id);
+    
+  }
+
+
   public void addSeiyuu(List<String> seiyuu){
 
   }
@@ -184,4 +258,7 @@ class Model{
 
   }
   public void addSeiyuu_FavoriteAnime(List<String> seiyuu,List<String> character){}
+
+  
 }
+// search関数を作るもっと簡単にしたやつ(引数に文章、検索ワード等を入れるだけで結果を格納した配列を返却するやつ)
