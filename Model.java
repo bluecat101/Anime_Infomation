@@ -318,7 +318,6 @@ class Model{
             }
             result.add(tmp);
           }
-          
         }else{
           m_start = p_start.matcher(line);
           if (m_start.find()){

@@ -30,10 +30,12 @@ class View extends JFrame{
     searchPanel = new SearchPanel(model);
     this.add(searchPanel);
 
-    JPanel searchPanel_2 = new JPanel();
-
-    searchPanel_2.add(testlabel);
-    this.add(searchPanel_2);
+    JPanel SearchResultPanel = new SearchResultPanel(model);
+    // SearchResultPanel.setPreferredSize(new Dimension(200, 100));
+    LineBorder border = new LineBorder(Color.BLUE, 2, true);
+    SearchResultPanel.setBorder(border);
+    // SearchResultPanel.add(testlabel);
+    this.add(SearchResultPanel);
     Image image =null;
     // try{
     // image = ImageIO.read(new File("no_image.png"));
@@ -75,6 +77,64 @@ class View extends JFrame{
     return searchPanel.getSearchListLabel();
   }
   
+}
+class SearchResultPanel extends JPanel{
+  // JPanel panel = new JPanel();
+  JPanel headerPanel = new JPanel();
+  JPanel contentsPanel = new JPanel();
+  GridBagLayout layout = new GridBagLayout();
+  GridBagConstraints gbc = new GridBagConstraints();
+  Model model;
+	public SearchResultPanel(Model m){
+		model = m;
+    // LineBorder border_2 = new LineBorder(Color.YELLOW, 2, true);
+    // panel.setBorder(border_2);
+    // panel.setLayout(layout);
+    this.setLayout(layout);
+
+    LineBorder border = new LineBorder(Color.RED, 2, true);
+    headerPanel.setBorder(border);
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    // gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.fill = GridBagConstraints.BOTH;
+    gbc.weighty = 0.2d;
+    gbc.weightx = 1.0d;
+    // gbc.anchor = GridBagConstraints.EAST;
+    layout.setConstraints(headerPanel,gbc);
+    
+    
+    contentsPanel.setBorder(border);
+    gbc.gridy = 1;
+    gbc.gridheight = 4;
+    gbc.weighty = 1.0d;
+    // gbc.fill = GridBagConstraints.BOTH;
+    // gbc.fill = GridBagConstraints.NONE;
+    // gbc.anchor = GridBagConstraints.CENTER;
+    layout.setConstraints(contentsPanel,gbc);
+
+    JButton testlabel = new JButton("test");
+    gbc.gridy = 6;
+    gbc.weighty = 0.2d;
+    gbc.gridheight = 3;
+    gbc.fill = GridBagConstraints.BOTH;
+    gbc.anchor = GridBagConstraints.SOUTHWEST;
+    layout.setConstraints(testlabel,gbc);
+
+    this.add(headerPanel);
+    this.add(contentsPanel);
+    this.add(testlabel);
+    // this.add(panel);
+    // validate();//更新
+    // repaint();
+  }
+  public void displayDetail(String title){
+    JLabel l_title = new JLabel(title);
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    layout.setConstraints(l_title,gbc);
+    headerPanel.add(l_title);
+  }
 }
 class SearchPanel extends JPanel{
   // GridBagLayout layout = new GridBagLayout();
