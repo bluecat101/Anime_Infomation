@@ -123,15 +123,19 @@ class Model{
     Url url = new Url();
     List<String> contents = new ArrayList<String>();
     contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/rest/WS000105?length=20&mainKeyVisualSize=2&searchKey=" + searchKey + "&vodTypeList=svod_tvod&_=1693395247779");
-    Pattern p_title = Pattern.compile("\"workId\":\"([0-9]+)\",\"workInfo\":\\{\"workTitle\":\"(.*?)\"");
-    Matcher m_title = p_title.matcher(contents.get(0));
-    
-    while(m_title.find()){
-      System.out.println(m_title.group(2));
-      if(checkTitle(m_title.group(2))){
-        searchSuggestions.add(new String[]{m_title.group(1),m_title.group(2)});
-      }
+    // Pattern p_title = Pattern.compile("\"workId\":\"([0-9]+)\",\"workInfo\":\\{\"workTitle\":\"(.*?)\"");
+    // Matcher m_title = p_title.matcher(contents.get(0));
+    ArrayList<String[]> searchResult = getSearchResult(contents, "\"workId\":\"([0-9]+)\",\"workInfo\":\\{\"workTitle\":\"(.*?)\"",2);
+    // while(m_title.find()){
+    //   System.out.println(m_title.group(2));
+    //   if(checkTitle(m_title.group(2))){
+    //     searchSuggestions.add(new String[]{m_title.group(1),m_title.group(2)});
+    //   }
+    // }
+    for(String[] result: searchResult){
+      searchSuggestions.add(result);
     }
+
     
     return searchSuggestions;
   }
@@ -158,36 +162,54 @@ class Model{
     return animeDetail;
   }
   //空:松岡禎丞／白:茅野愛衣
+  // public void searchAnimeSeiyuuCaracterByDAnimeContents(List<String> contents){
+  //   ArrayList<String[]> seiyuu_character_unit = new ArrayList<>();
+  //   Pattern pattern = Pattern.compile("(.*?):(.*?)(／|$)");
+  //   Matcher match;
+  //   boolean is_seiyuu_character = false;
+  //   Pattern p_start = Pattern.compile("\\<p\\>\\[キャスト\\]\\<br\\>");
+  //   Matcher m_start;
+  //   for(String line: contents){
+  //     if (is_seiyuu_character){
+  //       match = pattern.matcher(line);
+  //       while(match.find()){
+  //         seiyuu_character_unit.add(new String[] {match.group(1), match.group(2)});
+  //         if(seiyuu.containsKey(match.group((2)))){
+  //           seiyuu.get(match.group(2)).add(match.group(1));
+  //         }else{
+  //           ArrayList<String> tmp = new ArrayList<>();
+  //           tmp.add(match.group(1));
+  //           seiyuu.put(match.group(2),tmp);
+  //         }
+  //         System.out.println("(" + match.group(1)+"   "+ match.group(2) + ")"+ match.start()+ "   " + match.end());
+
+  //       }
+  //     break;
+  //     }else{
+  //       m_start = p_start.matcher(line);
+  //       if (m_start.find()){
+  //         is_seiyuu_character = true;
+  //       }
+        
+  //     }
+  //   }
+  //   seiyuu_character.add(seiyuu_character_unit);
+
+  //   // return seiyuu_character;
+  // }
   public void searchAnimeSeiyuuCaracterByDAnimeContents(List<String> contents){
     ArrayList<String[]> seiyuu_character_unit = new ArrayList<>();
-    Pattern pattern = Pattern.compile("(.*?):(.*?)(／|$)");
-    Matcher match;
-    boolean is_seiyuu_character = false;
-    Pattern p_start = Pattern.compile("\\<p\\>\\[キャスト\\]\\<br\\>");
-    Matcher m_start;
-    for(String line: contents){
-      if (is_seiyuu_character){
-        match = pattern.matcher(line);
-        while(match.find()){
-          seiyuu_character_unit.add(new String[] {match.group(1), match.group(2)});
-          if(seiyuu.containsKey(match.group((2)))){
-            seiyuu.get(match.group(2)).add(match.group(1));
-          }else{
-            ArrayList<String> tmp = new ArrayList<>();
-            tmp.add(match.group(1));
-            seiyuu.put(match.group(2),tmp);
-          }
-          System.out.println("(" + match.group(1)+"   "+ match.group(2) + ")"+ match.start()+ "   " + match.end());
-
-        }
-      break;
+    ArrayList<String[]> searchResult = getSearchResult(contents, "(.*?):(.*?)(／|$)",2,"\\<p\\>\\[キャスト\\]\\<br\\>","\\</p\\>");
+    for(String[] result: searchResult){
+      seiyuu_character_unit.add(result);
+      if(seiyuu.containsKey(result[1])){
+        seiyuu.get(result[1]).add(result[0]);
       }else{
-        m_start = p_start.matcher(line);
-        if (m_start.find()){
-          is_seiyuu_character = true;
-        }
-        
+        ArrayList<String> tmp = new ArrayList<>();
+        tmp.add(result[0]);
+        seiyuu.put(result[1],tmp);
       }
+      System.out.println("(" + result[0]+"   "+ result[1] + ")");
     }
     seiyuu_character.add(seiyuu_character_unit);
 
@@ -259,6 +281,88 @@ class Model{
   }
   public void addSeiyuu_FavoriteAnime(List<String> seiyuu,List<String> character){}
 
+    public ArrayList<String[]> getSearchResult(List<String> text, String pattern_text,int pattern_num){
+      Pattern pattern;
+      Matcher match;
+      ArrayList<String[]> result = new ArrayList<>();
+      pattern = Pattern.compile(pattern_text);
+      for(String line: text){
+        match = pattern.matcher(line);
+        while(match.find()){
+          String[] tmp = new String[pattern_num];
+          for(int i = 0; i < pattern_num; i++){
+            tmp[i] = match.group(i+1);
+          }
+          result.add(tmp);
+        }
+        
+      }
+      return result;
+    }
+
+    public ArrayList<String[]> getSearchResult(List<String> text, String pattern_text,int pattern_num,String start_pattern){
+      Pattern pattern;
+      Matcher match;
+      ArrayList<String[]> result = new ArrayList<>();
+      pattern = Pattern.compile(pattern_text);
+      boolean is_start = false;
+      Pattern p_start = Pattern.compile(start_pattern);
+      Matcher m_start;
+      for(String line: text){
+        if(is_start){
+          match = pattern.matcher(line);
+          while(match.find()){
+            String[] tmp = new String[pattern_num];
+            for(int i = 0; i < pattern_num; i++){
+              tmp[i] = match.group(i+1);
+            }
+            result.add(tmp);
+          }
+          
+        }else{
+          m_start = p_start.matcher(line);
+          if (m_start.find()){
+            is_start = true;
+          }
+        } 
+      }
+      return result;  
+    }
+
+    public ArrayList<String[]> getSearchResult(List<String> text, String pattern_text,int pattern_num,String start_pattern, String end_pattern){
+      Pattern pattern;
+      Matcher match;
+      ArrayList<String[]> result = new ArrayList<>();
+      pattern = Pattern.compile(pattern_text);
+      boolean is_start = false;
+      Pattern p_start = Pattern.compile(start_pattern);
+      Pattern p_end = Pattern.compile(end_pattern);
+      Matcher m_start,m_end;
+      for(String line: text){
+        if(is_start){
+          m_end = p_end.matcher(line);
+          if (m_end.find()){
+            break;
+          }
+          match = pattern.matcher(line);
+          while(match.find()){
+            String[] tmp = new String[pattern_num];
+            for(int i = 0; i < pattern_num; i++){
+              tmp[i] = match.group(i+1);
+            }
+            result.add(tmp);
+          }
+          
+        }else{
+          m_start = p_start.matcher(line);
+          if (m_start.find()){
+            is_start = true;
+          }
+        } 
+      }
+      return result;  
+      
+    }
   
+
 }
-// search関数を作るもっと簡単にしたやつ(引数に文章、検索ワード等を入れるだけで結果を格納した配列を返却するやつ)
