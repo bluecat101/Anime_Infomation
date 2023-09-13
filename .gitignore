@@ -11,6 +11,7 @@
 /youtube.properties
 /src/main/resources/client_secret.json
 /gradle
+/SearchResultPanel.class
 # Ignore Gradle project-specific cache directory
 .gradle
 

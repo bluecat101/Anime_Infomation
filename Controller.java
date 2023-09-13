@@ -42,6 +42,10 @@ class Controller implements ActionListener{
       System.out.println("click");
       
       String[] animeDetail = model.getAnimeDetail(e.getActionCommand()); //詳細取得
+      try{
+      view.displayHeader(animeDetail[0],model.getAnimeImage(Integer.parseInt(animeDetail[1])));
+
+      }catch(Exception error){}
         // for(String data: animeDetail){
         //   System.out.println(data);
         // }

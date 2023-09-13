@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.swing.border.LineBorder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.awt.Image;
 // import java.awt.BorderLayout;
 // import java.util.ArrayList;
 // import java.awt.GridBagLayout;
@@ -18,10 +19,8 @@ import java.util.HashMap;
 class View extends JFrame{
   private Model model;
   private SearchPanel searchPanel;
-  // JPanel testPanel_0 = new JPanel();
-  // JPanel testPanel_1 = new JPanel();
+  private SearchResultPanel searchResultPanel;
   JLabel testlabel = new JLabel("aaa");
-// JPanel testPanel =new JPanel():
   public View(Model m, String title){
     this.setTitle(title);
     model = m;
@@ -30,12 +29,12 @@ class View extends JFrame{
     searchPanel = new SearchPanel(model);
     this.add(searchPanel);
 
-    JPanel SearchResultPanel = new SearchResultPanel(model);
+    searchResultPanel = new SearchResultPanel(model);
     // SearchResultPanel.setPreferredSize(new Dimension(200, 100));
     LineBorder border = new LineBorder(Color.BLUE, 2, true);
-    SearchResultPanel.setBorder(border);
-    // SearchResultPanel.add(testlabel);
-    this.add(SearchResultPanel);
+    searchResultPanel.setBorder(border);
+    // searchResultPanel.add(testlabel);
+    this.add(searchResultPanel);
     Image image =null;
     // try{
     // image = ImageIO.read(new File("no_image.png"));
@@ -76,16 +75,21 @@ class View extends JFrame{
   public JButton[] getSearchListLabel(){
     return searchPanel.getSearchListLabel();
   }
-  
+  public void displayHeader(String title,Image img){
+    searchResultPanel.displayHeader(title,img);
+  }
+  public JButton getFavoriteButton(){
+    return searchResultPanel.getFavoriteButton();
+  }
 }
 class SearchResultPanel extends JPanel{
-  // JPanel panel = new JPanel();
   JPanel headerPanel = new JPanel();
   JPanel contentsPanel = new JPanel();
-  GridBagLayout layout = new GridBagLayout();
-  GridBagConstraints gbc = new GridBagConstraints();
+  JButton b_favorite;
   Model model;
 	public SearchResultPanel(Model m){
+    GridBagLayout layout = new GridBagLayout();
+    GridBagConstraints gbc = new GridBagConstraints();
 		model = m;
     // LineBorder border_2 = new LineBorder(Color.YELLOW, 2, true);
     // panel.setBorder(border_2);
@@ -106,7 +110,7 @@ class SearchResultPanel extends JPanel{
     
     contentsPanel.setBorder(border);
     gbc.gridy = 1;
-    gbc.gridheight = 4;
+    // gbc.gridheight = 4;
     gbc.weighty = 1.0d;
     // gbc.fill = GridBagConstraints.BOTH;
     // gbc.fill = GridBagConstraints.NONE;
@@ -114,9 +118,9 @@ class SearchResultPanel extends JPanel{
     layout.setConstraints(contentsPanel,gbc);
 
     JButton testlabel = new JButton("test");
-    gbc.gridy = 6;
+    gbc.gridy = 2;
     gbc.weighty = 0.2d;
-    gbc.gridheight = 3;
+    // gbc.gridheight = 3;
     gbc.fill = GridBagConstraints.BOTH;
     gbc.anchor = GridBagConstraints.SOUTHWEST;
     layout.setConstraints(testlabel,gbc);
@@ -128,22 +132,51 @@ class SearchResultPanel extends JPanel{
     // validate();//更新
     // repaint();
   }
-  public void displayDetail(String title){
-    JLabel l_title = new JLabel(title);
-    gbc.gridx = 0;
+  public void displayHeader(String title,Image img){
+    GridBagLayout layout = new GridBagLayout();
+    GridBagConstraints gbc = new GridBagConstraints();
+    headerPanel.setLayout(layout);
+    
+    Image image = null;
+    image = img;
+    ImageIcon icon = new ImageIcon(image);
+    JLabel l_image = new JLabel();
+    Image resizeIcon = icon.getImage().getScaledInstance((int) (icon.getIconWidth() * 0.1), -1,Image.SCALE_SMOOTH);
+    l_image.setIcon(new ImageIcon(resizeIcon));
+    gbc.gridx = 1;
     gbc.gridy = 0;
+    layout.setConstraints(l_image,gbc);
+
+    
+    JLabel l_title = new JLabel(title);
+    l_title.setFont(new Font("Century", Font.ITALIC, 21));
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    gbc.gridwidth = 3;
+    gbc.gridheight = 1;
     layout.setConstraints(l_title,gbc);
+    
+
+    b_favorite = new JButton("お気に入り");
+    gbc.gridx = 2;
+    gbc.gridy = 2;
+    gbc.gridwidth = 1;
+    gbc.gridheight = 1;
+    layout.setConstraints(b_favorite,gbc);
+
+
+    headerPanel.add(l_image);
     headerPanel.add(l_title);
+    headerPanel.add(b_favorite);
+    validate();//更新
+    repaint();
   }
+  public JButton getFavoriteButton(){
+    return b_favorite;
+  }
+  
 }
 class SearchPanel extends JPanel{
-  // GridBagLayout layout = new GridBagLayout();
-    // this.setLayout(layout);
-    // GridBagConstraints gbc = new GridBagConstraints();
-    // gbc.gridx = 0;
-    // gbc.gridy = 0;
-    // layout.setConstraints(searchPanel,gbc);
-  // JButton []btn = new JButton[5];//ボタン配列
   JButton b_search;
   JTextField text;
   JPanel panel = new JPanel();
@@ -165,18 +198,12 @@ class SearchPanel extends JPanel{
     gbc.gridy = 0;
     layout.setConstraints(l_title,gbc);
 
-    // JLabel dummy = new JLabel("");
     b_search = new JButton("検索");
     gbc.gridx = 1;
     gbc.gridy = 1;
     layout.setConstraints(b_search,gbc);
 
-    // panel.setLayout(new GridLayout(2,2));
-    
-
-
     panel.add(l_title);
-    // panel.add(dummy);
     panel.add(text);
     panel.add(b_search);
     this.add(panel);
