@@ -10,6 +10,9 @@ import javax.swing.border.LineBorder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.Image;
+import javax.swing.JScrollPane;
+// import java.awt.Container;
+
 // import java.awt.BorderLayout;
 // import java.util.ArrayList;
 // import java.awt.GridBagLayout;
@@ -107,15 +110,16 @@ class SearchResultPanel extends JPanel{
     // gbc.anchor = GridBagConstraints.EAST;
     layout.setConstraints(headerPanel,gbc);
     
-    
+    JScrollPane scrollPane = new JScrollPane(contentsPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     contentsPanel.setBorder(border);
+    // contentsPanel.setBorder(border);
     gbc.gridy = 1;
     // gbc.gridheight = 4;
     gbc.weighty = 1.0d;
     // gbc.fill = GridBagConstraints.BOTH;
     // gbc.fill = GridBagConstraints.NONE;
     // gbc.anchor = GridBagConstraints.CENTER;
-    layout.setConstraints(contentsPanel,gbc);
+    layout.setConstraints(scrollPane,gbc);
 
     JButton testlabel = new JButton("test");
     gbc.gridy = 2;
@@ -126,8 +130,11 @@ class SearchResultPanel extends JPanel{
     layout.setConstraints(testlabel,gbc);
 
     this.add(headerPanel);
-    this.add(contentsPanel);
+    this.add(scrollPane);
     this.add(testlabel);
+    for(int i=0;i<getComponents().length;i++){
+      System.out.println("before:"+getComponents()[i]);
+    }
     // this.add(panel);
     // validate();//更新
     // repaint();
@@ -168,6 +175,31 @@ class SearchResultPanel extends JPanel{
     headerPanel.add(l_image);
     headerPanel.add(l_title);
     headerPanel.add(b_favorite);
+    
+    // for(int i=0;i<getComponents().length;i++){
+    
+    // for(int i=0;i<getComponents()[0].length;i++){
+    //     System.out.println(getComponents()[0][i]);
+    // }
+    
+    // String type = ;
+		System.out.println(getComponents()[0].getClass());
+
+    // }
+
+    contentsPanel.setLayout(layout);
+    
+    ArrayList<String[]> seiyuuList = model.getSeiyuuCharacter(title);
+    for(int i=0; i<seiyuuList.size()-1 ;i++){
+      JLabel seiyuu_character_unit = new JLabel(seiyuuList.get(i+1)[0] + " : "+seiyuuList.get(i+1)[1]);
+      gbc.gridx = 0;
+      gbc.gridy = i;
+      
+      layout.setConstraints(seiyuu_character_unit,gbc);
+      contentsPanel.add(seiyuu_character_unit);
+      // System.out.println(seiyuuList.get(i+1)[0] + " : "+seiyuuList.get(i+1)[1]);
+    }
+   
     validate();//更新
     repaint();
   }

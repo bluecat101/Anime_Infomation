@@ -9,47 +9,12 @@ import java.io.IOException;
 
 
 class Model{
-  Map<String,Integer> animeTIDDB = new HashMap<>();
-  ArrayList<ArrayList<String[]>> seiyuu_character = new ArrayList<>();
-  Map<String,ArrayList<String>> seiyuu = new HashMap<>();
+  ArrayList<ArrayList<String[]>> seiyuu_character = new ArrayList<>();// 各アニメのキャラクター
+  Map<String,ArrayList<String>> seiyuu = new HashMap<>(); //　声優に対するキャラクター
   ArrayList<ArrayList<String>> favoriteAnime = new ArrayList<>();
   Map<String,Integer> tmpSearchSuggestions = new HashMap<>();
   public Model(List<String> contents){
-    searchAnimeTID(contents);
-  }
-  void searchAnimeTID(List<String> contents){
-    Pattern pattern = Pattern.compile("<a href=\"/tid/(\\d+)\">(.*)</a>");
-    Matcher match;
-    for(String line: contents){
-      match = pattern.matcher(line);
-      if (match.find()){
-        setAnimeTIDDB(Integer.parseInt(match.group(1)),match.group(2));
-        // System.out.println(match.group(2));
-      }
-    }
-  }
-  private void setAnimeTIDDB(int tid, String title){
-    animeTIDDB.put(title,tid);
-  }
-  public String[] getAnimeDetailByTID(int tid){
-    String[] animeDetail = new String[3];
-    Url url = new Url();
-    List<String> contents = new ArrayList<String>();
-    contents = url.connectHttp("https://cal.syoboi.jp/db.php?Command=TitleLookup&TID="+tid);
-    String[] title_production = searchAnimeTitleProductionByContents(contents);
-    searchAnimeSeiyuuCaracterByContents(contents);
-    animeDetail[0] = title_production[0];
-    animeDetail[1] = String.valueOf(tid);
-    animeDetail[2] = title_production[1];
-    // for(Map.Entry<String,ArrayList<String>> data: seiyuu.entrySet()) {
-    //   System.out.println(data.getKey());
-    //   for(String character: data.getValue()){
-    //     System.out.println("    "+character);
-    //   }
-    // }
-    return animeDetail;
-
-
+    // searchAnimeTID(contents);
   }
   public String[] searchAnimeTitleProductionByContents(List<String> contents){
     String[] title_production = {"",""};
@@ -111,12 +76,6 @@ class Model{
     // return seiyuu_character;
   }
 
-  public Map<String,Integer> getAnimeTIDDB(){
-    return animeTIDDB;
-  }
-  public int searchTID(String title){
-    return animeTIDDB.get(title);
-  }
 
   public ArrayList<String[]> searchDAnimeStore(String searchKey) {
     ArrayList<String[]> searchSuggestions =new ArrayList<String[]>();
@@ -150,15 +109,15 @@ class Model{
     List<String> contents = new ArrayList<String>();
     
     contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/ci_pc?workId=" + id);
-    searchAnimeSeiyuuCaracterByDAnimeContents(contents);
+    searchAnimeSeiyuuCaracterByDAnimeContents(contents,id,title);
     animeDetail[0] = title;
     animeDetail[1] = String.valueOf(id);
-    for(Map.Entry<String,ArrayList<String>> data: seiyuu.entrySet()) {
-      System.out.println(data.getKey());
-      for(String character: data.getValue()){
-        System.out.println("    "+character);
-      }
-    }
+    // for(Map.Entry<String,ArrayList<String>> data: seiyuu.entrySet()) {
+    //   System.out.println(data.getKey());
+    //   for(String character: data.getValue()){
+    //     System.out.println("    "+character);
+    //   }
+    // }
     return animeDetail;
   }
   //空:松岡禎丞／白:茅野愛衣
@@ -197,8 +156,9 @@ class Model{
 
   //   // return seiyuu_character;
   // }
-  public void searchAnimeSeiyuuCaracterByDAnimeContents(List<String> contents){
+  public void searchAnimeSeiyuuCaracterByDAnimeContents(List<String> contents,int id,String title){
     ArrayList<String[]> seiyuu_character_unit = new ArrayList<>();
+    seiyuu_character_unit.add(new String[]{title,String.valueOf(id)});  
     ArrayList<String[]> searchResult = getSearchResult(contents, "(.*?):(.*?)(／|$)",2,"\\<p\\>\\[キャスト\\]\\<br\\>","\\</p\\>");
     for(String[] result: searchResult){
       seiyuu_character_unit.add(result);
@@ -209,7 +169,7 @@ class Model{
         tmp.add(result[0]);
         seiyuu.put(result[1],tmp);
       }
-      System.out.println("(" + result[0]+"   "+ result[1] + ")");
+      // System.out.println("(" + result[0]+"   "+ result[1] + ")");
     }
     seiyuu_character.add(seiyuu_character_unit);
 
@@ -258,9 +218,7 @@ class Model{
   public Map<String,Integer>  getTmpSearchSuggestions(){
     return tmpSearchSuggestions;
   }
-  public boolean checkTitle(String title){
-    return animeTIDDB.containsKey(title);
-  }
+
   public void getAnimeDetailByDAS(int id){
     Url url = new Url();
     List<String> contents = new ArrayList<String>();
@@ -279,6 +237,18 @@ class Model{
   public void addFavoriteAnime(){
 
   }
+  public ArrayList<String[]> getSeiyuuCharacter(String title){
+    ArrayList<String[]> seiyuuCharacterList = new ArrayList<>();
+    for(ArrayList<String[]> anime:seiyuu_character){
+      if(title == anime.get(0)[0]){
+        seiyuuCharacterList = anime;
+        break;
+      }
+    }
+    return seiyuuCharacterList;
+  }
+
+
   public void addSeiyuu_FavoriteAnime(List<String> seiyuu,List<String> character){}
 
     public ArrayList<String[]> getSearchResult(List<String> text, String pattern_text,int pattern_num){
