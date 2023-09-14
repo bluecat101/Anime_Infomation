@@ -43,7 +43,7 @@ class Controller implements ActionListener{
       
       String[] animeDetail = model.getAnimeDetail(e.getActionCommand()); //詳細取得
       try{
-      view.displayHeader(animeDetail[0],model.getAnimeImage(Integer.parseInt(animeDetail[1])));
+      view.displayDetail(animeDetail[0],model.getAnimeImage(Integer.parseInt(animeDetail[1])));
 
       }catch(Exception error){}
         // for(String data: animeDetail){

@@ -78,8 +78,8 @@ class View extends JFrame{
   public JButton[] getSearchListLabel(){
     return searchPanel.getSearchListLabel();
   }
-  public void displayHeader(String title,Image img){
-    searchResultPanel.displayHeader(title,img);
+  public void displayDetail(String title,Image img){
+    searchResultPanel.displayDetail(title,img);
   }
   public JButton getFavoriteButton(){
     return searchResultPanel.getFavoriteButton();
@@ -121,25 +121,29 @@ class SearchResultPanel extends JPanel{
     // gbc.anchor = GridBagConstraints.CENTER;
     layout.setConstraints(scrollPane,gbc);
 
-    JButton testlabel = new JButton("test");
-    gbc.gridy = 2;
-    gbc.weighty = 0.2d;
-    // gbc.gridheight = 3;
-    gbc.fill = GridBagConstraints.BOTH;
-    gbc.anchor = GridBagConstraints.SOUTHWEST;
-    layout.setConstraints(testlabel,gbc);
+    // JButton testlabel = new JButton("test");
+    // gbc.gridy = 2;
+    // gbc.weighty = 0.2d;
+    // // gbc.gridheight = 3;
+    // gbc.fill = GridBagConstraints.BOTH;
+    // gbc.anchor = GridBagConstraints.SOUTHWEST;
+    // layout.setConstraints(testlabel,gbc);
 
     this.add(headerPanel);
     this.add(scrollPane);
-    this.add(testlabel);
-    for(int i=0;i<getComponents().length;i++){
-      System.out.println("before:"+getComponents()[i]);
-    }
+    // this.add(testlabel);
+    // System.out.println("before:"+getComponents()[0]);
+    
+
+    // for(int i=0;i<getComponents().length;i++){
+    //   System.out.println("before:"+getComponents()[i]);
+    // }
     // this.add(panel);
     // validate();//更新
     // repaint();
   }
-  public void displayHeader(String title,Image img){
+  public void displayDetail(String title,Image img){
+    removeComponent();
     GridBagLayout layout = new GridBagLayout();
     GridBagConstraints gbc = new GridBagConstraints();
     headerPanel.setLayout(layout);
@@ -175,20 +179,9 @@ class SearchResultPanel extends JPanel{
     headerPanel.add(l_image);
     headerPanel.add(l_title);
     headerPanel.add(b_favorite);
-    
-    // for(int i=0;i<getComponents().length;i++){
-    
-    // for(int i=0;i<getComponents()[0].length;i++){
-    //     System.out.println(getComponents()[0][i]);
-    // }
-    
-    // String type = ;
-		System.out.println(getComponents()[0].getClass());
-
-    // }
 
     contentsPanel.setLayout(layout);
-    
+    JLabel head_seiyuu = new JLabel("声優 : " + "キャラクター");
     ArrayList<String[]> seiyuuList = model.getSeiyuuCharacter(title);
     for(int i=0; i<seiyuuList.size()-1 ;i++){
       JLabel seiyuu_character_unit = new JLabel(seiyuuList.get(i+1)[0] + " : "+seiyuuList.get(i+1)[1]);
@@ -199,12 +192,16 @@ class SearchResultPanel extends JPanel{
       contentsPanel.add(seiyuu_character_unit);
       // System.out.println(seiyuuList.get(i+1)[0] + " : "+seiyuuList.get(i+1)[1]);
     }
-   
+    
     validate();//更新
     repaint();
   }
   public JButton getFavoriteButton(){
     return b_favorite;
+  }
+  public void removeComponent(){
+    headerPanel.removeAll();
+    contentsPanel.removeAll();
   }
   
 }
