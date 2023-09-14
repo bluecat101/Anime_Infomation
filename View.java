@@ -38,7 +38,7 @@ class View extends JFrame{
     searchResultPanel.setBorder(border);
     // searchResultPanel.add(testlabel);
     this.add(searchResultPanel);
-    Image image =null;
+    // Image image =null;
     // try{
     // image = ImageIO.read(new File("no_image.png"));
     // ImageIcon icon = new ImageIcon(image);
@@ -60,6 +60,9 @@ class View extends JFrame{
     // validate();//更新
     // repaint();
     // System.out.println(contentPane);
+  }
+  public JPanel getSearchWindowPanel(){
+    return searchPanel.getSearchWindowPanel();
   }
   public String getSearchText(){
     return searchPanel.getSearchText();
@@ -84,6 +87,9 @@ class View extends JFrame{
   public JButton getFavoriteButton(){
     return searchResultPanel.getFavoriteButton();
   }
+  public void displaySearchIndex(){
+    searchResultPanel.displaySearchIndex();
+  }
 }
 class SearchResultPanel extends JPanel{
   JPanel headerPanel = new JPanel();
@@ -94,51 +100,26 @@ class SearchResultPanel extends JPanel{
     GridBagLayout layout = new GridBagLayout();
     GridBagConstraints gbc = new GridBagConstraints();
 		model = m;
-    // LineBorder border_2 = new LineBorder(Color.YELLOW, 2, true);
-    // panel.setBorder(border_2);
-    // panel.setLayout(layout);
     this.setLayout(layout);
 
     LineBorder border = new LineBorder(Color.RED, 2, true);
     headerPanel.setBorder(border);
     gbc.gridx = 0;
     gbc.gridy = 0;
-    // gbc.fill = GridBagConstraints.HORIZONTAL;
     gbc.fill = GridBagConstraints.BOTH;
     gbc.weighty = 0.2d;
     gbc.weightx = 1.0d;
-    // gbc.anchor = GridBagConstraints.EAST;
     layout.setConstraints(headerPanel,gbc);
     
     JScrollPane scrollPane = new JScrollPane(contentsPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     contentsPanel.setBorder(border);
-    // contentsPanel.setBorder(border);
     gbc.gridy = 1;
-    // gbc.gridheight = 4;
     gbc.weighty = 1.0d;
-    // gbc.fill = GridBagConstraints.BOTH;
-    // gbc.fill = GridBagConstraints.NONE;
-    // gbc.anchor = GridBagConstraints.CENTER;
     layout.setConstraints(scrollPane,gbc);
 
-    // JButton testlabel = new JButton("test");
-    // gbc.gridy = 2;
-    // gbc.weighty = 0.2d;
-    // // gbc.gridheight = 3;
-    // gbc.fill = GridBagConstraints.BOTH;
-    // gbc.anchor = GridBagConstraints.SOUTHWEST;
-    // layout.setConstraints(testlabel,gbc);
 
     this.add(headerPanel);
     this.add(scrollPane);
-    // this.add(testlabel);
-    // System.out.println("before:"+getComponents()[0]);
-    
-
-    // for(int i=0;i<getComponents().length;i++){
-    //   System.out.println("before:"+getComponents()[i]);
-    // }
-    // this.add(panel);
     // validate();//更新
     // repaint();
   }
@@ -147,17 +128,17 @@ class SearchResultPanel extends JPanel{
     GridBagLayout layout = new GridBagLayout();
     GridBagConstraints gbc = new GridBagConstraints();
     headerPanel.setLayout(layout);
-    
-    Image image = null;
-    image = img;
-    ImageIcon icon = new ImageIcon(image);
-    JLabel l_image = new JLabel();
-    Image resizeIcon = icon.getImage().getScaledInstance((int) (icon.getIconWidth() * 0.1), -1,Image.SCALE_SMOOTH);
-    l_image.setIcon(new ImageIcon(resizeIcon));
+
+    // Image image = null;
+    // image = img;
+    // ImageIcon icon = new ImageIcon(image);
+    // JLabel l_image = new JLabel(icon);
+    JLabel l_image = setImage(img, 0.1);
+    // Image resizeIcon = icon.getImage().getScaledInstance((int) (icon.getIconWidth() * 0.1), -1,Image.SCALE_SMOOTH);
+    // l_image.setIcon(new ImageIcon(resizeIcon));
     gbc.gridx = 1;
     gbc.gridy = 0;
     layout.setConstraints(l_image,gbc);
-
     
     JLabel l_title = new JLabel(title);
     l_title.setFont(new Font("Century", Font.ITALIC, 21));
@@ -203,19 +184,101 @@ class SearchResultPanel extends JPanel{
     headerPanel.removeAll();
     contentsPanel.removeAll();
   }
-  
+  public void displaySearchIndex(){
+    removeComponent();
+    GridBagLayout layout = new GridBagLayout();
+    GridBagConstraints gbc = new GridBagConstraints();
+    headerPanel.setLayout(layout);
+
+    Map<String,Integer>  searchSuggestions = model.getTmpSearchSuggestions();
+    String searchText = "";
+    for(Map.Entry<String,Integer> searchAnime : searchSuggestions.entrySet()) {
+      if(searchAnime.getValue() == -1){
+        searchText = searchAnime.getKey();
+      }
+    }
+    JLabel l_searchText = new JLabel("検索内容 : " + searchText);
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    layout.setConstraints(l_searchText,gbc);
+    headerPanel.add(l_searchText);
+
+    contentsPanel.setLayout(layout);
+    JLabel head_title = new JLabel("検索結果一覧");
+    // ArrayList<String[]> seiyuuList = model.getSeiyuuCharacter(title);
+    int i = 0;
+    for(Map.Entry<String,Integer> searchAnime : searchSuggestions.entrySet()) {
+      if(searchAnime.getValue() == -1){
+        continue;
+      }
+      JPanel searchAnime_unit = new JPanel();
+      searchAnime_unit.setLayout(new BorderLayout());
+      JLabel title = new JLabel(searchAnime.getKey());
+      JLabel l_image = null;
+      try{
+        l_image = setImage(model.getAnimeImage(searchAnime.getValue()), 0.05);
+      }catch(Exception error){}
+      l_image.setHorizontalAlignment(JLabel.CENTER);
+      searchAnime_unit.add(title, BorderLayout.NORTH);
+      searchAnime_unit.add(l_image, BorderLayout.CENTER);
+
+      gbc.gridx = 0;
+      // gbc.gridx = i % 2;
+      gbc.gridy = i;
+      layout.setConstraints(searchAnime_unit,gbc);
+      contentsPanel.add(searchAnime_unit);
+      i++;
+      
+      
+      
+      // Image image = null;
+      // image = img;
+      // ImageIcon icon = new ImageIcon(image);
+      
+      // Image resizeIcon = icon.getImage().getScaledInstance((int) (icon.getIconWidth() * 0.1), -1,Image.SCALE_SMOOTH);
+      // l_image.setIcon(new ImageIcon(resizeIcon));
+      // gbc.gridx = 1;
+      // gbc.gridy = 0;
+      // layout.setConstraints(l_image,gbc);
+
+      // JLabel seiyuu_character_unit = new JLabel(seiyuuList.get(i+1)[0] + " : "+seiyuuList.get(i+1)[1]);
+      // gbc.gridx = 0;
+      // gbc.gridy = i;
+      
+      // layout.setConstraints(seiyuu_character_unit,gbc);
+      // contentsPanel.add(seiyuu_character_unit);
+      // System.out.println(seiyuuList.get(i+1)[0] + " : "+seiyuuList.get(i+1)[1]);
+    }
+    
+    validate();//更新
+    repaint();
+
+
+
+
+
+  }
+  private JLabel setImage(Image img, Double size){
+    Image image = null;
+    image = img;
+    ImageIcon icon = new ImageIcon(image);
+    JLabel l_image = new JLabel();
+    Image resizeIcon = icon.getImage().getScaledInstance((int) (icon.getIconWidth() * size), -1,Image.SCALE_SMOOTH);
+    l_image.setIcon(new ImageIcon(resizeIcon));
+    return l_image;
+  }
 }
 class SearchPanel extends JPanel{
   JButton b_search;
   JTextField text;
-  JPanel panel = new JPanel();
+  JPanel p_searchWindow = new JPanel();
   GridBagLayout layout = new GridBagLayout();
   GridBagConstraints gbc = new GridBagConstraints();
   JButton[] b_searchSuggestion;
   Model model;
 	public SearchPanel(Model m){
 		model = m;
-    panel.setLayout(layout);
+    p_searchWindow.setLayout(layout);
 
     text = new JTextField(10);
     gbc.gridx = 0;
@@ -232,10 +295,10 @@ class SearchPanel extends JPanel{
     gbc.gridy = 1;
     layout.setConstraints(b_search,gbc);
 
-    panel.add(l_title);
-    panel.add(text);
-    panel.add(b_search);
-    this.add(panel);
+    p_searchWindow.add(l_title);
+    p_searchWindow.add(text);
+    p_searchWindow.add(b_search);
+    this.add(p_searchWindow);
 	}
   public String getSearchText(){
     return text.getText();
@@ -243,21 +306,26 @@ class SearchPanel extends JPanel{
   public JButton getSearchButton(){
     return b_search;
   }
+  public JPanel getSearchWindowPanel(){
+    return p_searchWindow;
+  }
+
   public void displaySearchList(){
+    for(int i = p_searchWindow.getComponentCount()-1; i>= 3;i--){
+      p_searchWindow.remove(i);
+    }
     b_searchSuggestion = new JButton[4];
     gbc.gridx = 0;
-    // int count = 0;
     int searchWidth = text.getWidth();
     int searchHeight = text.getHeight();
 
     Map<String,Integer>  searchSuggestions = model.getTmpSearchSuggestions();
-    // String[] searchSuggestions = new String[tmp.size()];
+    
     int count = 0;
     for(String title : searchSuggestions.keySet()) {
-        // System.out.println(title)
-    // }
-    // for(;count<searchSuggestions.size();count++){
-      // searchSuggestions[i] = tmp;
+      if(searchSuggestions.get(title) == -1){
+        continue;
+      }
       if (count > 3){
         break;
       }
@@ -266,24 +334,19 @@ class SearchPanel extends JPanel{
       b_searchSuggestion[count].setBorder(new LineBorder(Color.BLACK, 1, false));
       gbc.gridy = count + 2;
       layout.setConstraints(b_searchSuggestion[count], gbc);
-      panel.add(b_searchSuggestion[count]);
+      p_searchWindow.add(b_searchSuggestion[count]);
       count++;
     }
+    // System.out.println(panel.getComponentCount());
 
     
-    // // System.out.println(searchWidth);
-    // for(String title: searchSuggestions){
-      
-      
-    //   count++;
-    // }
     
     if (searchSuggestions.size() > 4){
-      JLabel moreSearchList = new JLabel("検索結果をさらに表示");
+      JButton moreSearchList = new JButton("検索結果をさらに表示");
       // test_2.setBorder(new LineBorder(Color.RED, 2, false));
       gbc.gridy = count + 2;
       layout.setConstraints(moreSearchList, gbc);
-      panel.add(moreSearchList);
+      p_searchWindow.add(moreSearchList);
     }
 
     validate();//更新
@@ -293,14 +356,6 @@ class SearchPanel extends JPanel{
   public JButton[] getSearchListLabel(){
     return b_searchSuggestion;
   }
+
+  
 }
-// class SearchResultPanel extends JPanel {
-//   // String title = new String();
-//   public SearchResultPanel(String title,String production){
-//     // this.title = title;
-//     JLabel l_title  = title
-//     JLabel l_productipn = production;
-//     JButton b_favorite = new JButton();
-    
-//   }
-// }

@@ -176,6 +176,7 @@ class Model{
     // return seiyuu_character;
   }
   public Image getAnimeImage(int searchID) throws IOException{
+    // System.out.println(searchID);
     Url url = new Url();
     List<String> contents = new ArrayList<String>();
     // System.out.println(searchID);
@@ -209,8 +210,9 @@ class Model{
   public void resetTmpSearchSuggetions(){
     tmpSearchSuggestions.clear();
   }
-  public void setTmpSearchSuggetions(ArrayList<String[]> searchSuggestions){
+  public void setTmpSearchSuggetions(ArrayList<String[]> searchSuggestions, String searchText){
     resetTmpSearchSuggetions();
+    tmpSearchSuggestions.put(searchText, -1);
     for (String[] data: searchSuggestions){
       tmpSearchSuggestions.put(data[1],Integer.parseInt(data[0]));
     }
