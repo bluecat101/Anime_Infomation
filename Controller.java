@@ -15,6 +15,7 @@ class Controller implements ActionListener, MouseListener{
     model = m;
     view = v;
     view.getSearchButton().addActionListener(this);
+    view.getFavoriteIndexButton().addActionListener(this);
     // animeTIDDB = model.getAnimeTIDDB();
   }
   
@@ -65,6 +66,8 @@ class Controller implements ActionListener, MouseListener{
       contentsPanel.addMouseListener(this);
     }else if(e.getActionCommand() == "お気に入り"){
       model.addFavoriteAnime();
+    }else if(e.getActionCommand() == "お気に入り一覧"){
+      view.displayFavoriteIndex();
     }
     
 

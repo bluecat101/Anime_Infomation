@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.Image;
 import javax.swing.JScrollPane;
+// import java.awt.image.BufferedImage;
+
 // import java.awt.Container;
 
 // import java.awt.BorderLayout;
@@ -112,6 +114,12 @@ class View extends JFrame{
   }
   public JPanel getcontentsPanel(){
     return searchResultPanel.getcontentsPanel();
+  }
+  public JButton getFavoriteIndexButton(){
+    return functionPanel.getFavoriteIndexButton();
+  }
+  public void displayFavoriteIndex(){
+    searchResultPanel.displayFavoriteIndex();
   }
 }
 class SearchResultPanel extends JPanel{
@@ -223,39 +231,37 @@ class SearchResultPanel extends JPanel{
     headerPanel.add(l_searchText);
 
     contentsPanel.setLayout(layout);
-    JLabel head_title = new JLabel("検索結果一覧");
+    JLabel l_section = new JLabel("検索結果一覧");
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    layout.setConstraints(l_section,gbc);
+    contentsPanel.add(l_section);
     // ArrayList<String[]> seiyuuList = model.getSeiyuuCharacter(title);
-    int i = 0;
+    int i = 1;
     for(Map.Entry<String,Integer> searchAnime : searchSuggestions.entrySet()) {
       if(searchAnime.getValue() == -1){
         continue;
       }
-      JPanel searchAnime_unit = new JPanel();
-      searchAnime_unit.setLayout(new BorderLayout());
-      JLabel title = new JLabel(searchAnime.getKey());
+      JPanel p_searchAnime_unit = new JPanel();
+      p_searchAnime_unit.setLayout(new BorderLayout());
+      JLabel l_title = new JLabel(searchAnime.getKey());
       JLabel l_image = null;
       try{
         l_image = setImage(model.getAnimeImage(searchAnime.getValue()), 0.05);
       }catch(Exception error){}
       l_image.setHorizontalAlignment(JLabel.CENTER);
-      searchAnime_unit.add(title, BorderLayout.NORTH);
-      searchAnime_unit.add(l_image, BorderLayout.CENTER);
+      p_searchAnime_unit.add(l_title, BorderLayout.NORTH);
+      p_searchAnime_unit.add(l_image, BorderLayout.CENTER);
 
       gbc.gridx = 0;
-      // gbc.gridx = i % 2;
       gbc.gridy = i;
-      layout.setConstraints(searchAnime_unit,gbc);
-      contentsPanel.add(searchAnime_unit);
+      layout.setConstraints(p_searchAnime_unit,gbc);
+      contentsPanel.add(p_searchAnime_unit);
       i++;
     }
     
     validate();//更新
     repaint();
-
-
-
-
-
   }
   private JLabel setImage(Image img, Double size){
     Image image = null;
@@ -268,6 +274,49 @@ class SearchResultPanel extends JPanel{
   }
   public JPanel getcontentsPanel(){
     return contentsPanel;
+  }
+  public void displayFavoriteIndex(){
+    removeComponent();
+    GridBagLayout layout = new GridBagLayout();
+    GridBagConstraints gbc = new GridBagConstraints();
+    headerPanel.setLayout(layout);
+
+    JLabel l_head = new JLabel("お気に入り一覧");
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    layout.setConstraints(l_head,gbc);
+    headerPanel.add(l_head);
+
+    contentsPanel.setLayout(layout);
+    int i = 0;
+    for(String[] favoriteAnime: model.getFavoriteAnime()){
+      JPanel p_favoriteAnime_unit = new JPanel();
+      p_favoriteAnime_unit.setLayout(new BorderLayout());
+      JLabel l_title = new JLabel(favoriteAnime[0]);
+      JLabel l_image = null;
+      try{
+        Image image = null;
+        File file = new File("image/" + favoriteAnime[1] + ".jpg");
+        if(file.exists()){
+          image = ImageIO.read(new File("image/" + favoriteAnime[1] + ".jpg"));
+        }else{
+          image = ImageIO.read(new File("image/no_image.png"));
+        }
+        l_image = setImage(image, 0.07);
+      }catch(Exception error){}
+      l_image.setHorizontalAlignment(JLabel.CENTER);
+      p_favoriteAnime_unit.add(l_title, BorderLayout.NORTH);
+      p_favoriteAnime_unit.add(l_image, BorderLayout.CENTER);
+
+      gbc.gridx = 0;
+      gbc.gridy = i;
+      layout.setConstraints(p_favoriteAnime_unit,gbc);
+      contentsPanel.add(p_favoriteAnime_unit);
+      i++;
+    }
+
+    validate();//更新
+    repaint();
   }
 }
 class SearchPanel extends JPanel{
@@ -361,7 +410,20 @@ class SearchPanel extends JPanel{
 }
 class FunctionPanel extends JPanel{
   Model model;
+  JButton b_favoriteIndex;
   public FunctionPanel(Model m){
     model = m;
+    GridBagLayout layout = new GridBagLayout();
+    GridBagConstraints gbc = new GridBagConstraints();
+    this.setLayout(layout);
+
+    b_favoriteIndex = new JButton("お気に入り一覧");
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    layout.setConstraints(b_favoriteIndex,gbc);
+    this.add(b_favoriteIndex);
+  }
+  public JButton getFavoriteIndexButton(){
+    return b_favoriteIndex;
   }
 }

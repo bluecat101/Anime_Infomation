@@ -6,6 +6,9 @@ import java.awt.Image;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.awt.image.BufferedImage;
+// import javax.imageio.ImageIO;
+import java.net.*;
 
 
 class Model{
@@ -104,7 +107,7 @@ class Model{
   }
 
   public void setTmpAnimeDetail(String title){
-    tmpAnimeDetail = new String[2];
+    tmpAnimeDetail = new String[3];
     int id = getDAnimeID(title);
     Url url = new Url();
     List<String> contents = new ArrayList<String>();
@@ -188,13 +191,14 @@ class Model{
 
     Pattern p_image = Pattern.compile("<meta property=og:image content=\"(.*)\"/>");
     Matcher m_image = p_image.matcher(contents.get(0));
-    Image image = ImageIO.read(new File("no_image.png"));
+    Image image = ImageIO.read(new File("image/no_image.png"));
 
     for(String line: contents){
       m_image = p_image.matcher(line);
       if (m_image.find()){
         try{
           image = url.getImage(m_image.group(1));
+          tmpAnimeDetail[2] = m_image.group(1);
         }catch(Exception error){
 
         }
@@ -235,6 +239,16 @@ class Model{
   }
   public void addFavoriteAnime(){
     favoriteAnime.add(tmpAnimeDetail);
+    
+    try {
+      BufferedImage image = ImageIO.read(new URI(tmpAnimeDetail[2]).toURL());
+      ImageIO.write(image, "jpeg", new File("image/"+tmpAnimeDetail[1]+".jpg"));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  public ArrayList<String[]> getFavoriteAnime(){
+    return favoriteAnime;
   }
   public ArrayList<String[]> getSeiyuuCharacter(String title){
     ArrayList<String[]> seiyuuCharacterList = new ArrayList<>();
