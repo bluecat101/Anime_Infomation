@@ -11,8 +11,9 @@ import java.io.IOException;
 class Model{
   ArrayList<ArrayList<String[]>> seiyuu_character = new ArrayList<>();// 各アニメのキャラクター
   Map<String,ArrayList<String>> seiyuu = new HashMap<>(); //　声優に対するキャラクター
-  ArrayList<ArrayList<String>> favoriteAnime = new ArrayList<>();
+  ArrayList<String[]> favoriteAnime = new ArrayList<>();
   Map<String,Integer> tmpSearchSuggestions = new HashMap<>();
+  String[] tmpAnimeDetail;
   public Model(List<String> contents){
     // searchAnimeTID(contents);
   }
@@ -102,23 +103,26 @@ class Model{
     return tmpSearchSuggestions.get(title);
   }
 
-  public String[] getAnimeDetail(String title){
-    String[] animeDetail = new String[2];
+  public void setTmpAnimeDetail(String title){
+    tmpAnimeDetail = new String[2];
     int id = getDAnimeID(title);
     Url url = new Url();
     List<String> contents = new ArrayList<String>();
     
     contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/ci_pc?workId=" + id);
     searchAnimeSeiyuuCaracterByDAnimeContents(contents,id,title);
-    animeDetail[0] = title;
-    animeDetail[1] = String.valueOf(id);
+    tmpAnimeDetail[0] = title;
+    tmpAnimeDetail[1] = String.valueOf(id);
     // for(Map.Entry<String,ArrayList<String>> data: seiyuu.entrySet()) {
     //   System.out.println(data.getKey());
     //   for(String character: data.getValue()){
     //     System.out.println("    "+character);
     //   }
     // }
-    return animeDetail;
+    // return tmpAnimeDetail;
+  }
+  public String[] getTmpAnimeDetail(){
+    return tmpAnimeDetail;
   }
   //空:松岡禎丞／白:茅野愛衣
   // public void searchAnimeSeiyuuCaracterByDAnimeContents(List<String> contents){
@@ -184,10 +188,7 @@ class Model{
 
     Pattern p_image = Pattern.compile("<meta property=og:image content=\"(.*)\"/>");
     Matcher m_image = p_image.matcher(contents.get(0));
-    // URL image_url = new Url();
-    // try(){
     Image image = ImageIO.read(new File("no_image.png"));
-    // Image Image=null;
 
     for(String line: contents){
       m_image = p_image.matcher(line);
@@ -197,13 +198,9 @@ class Model{
         }catch(Exception error){
 
         }
-        // return image;
       }
     }
-    // }catch(IOException e) {}
     return image;
-    // Image image = ImageIO.read(image_url);
-    // }
     
 
   }
@@ -237,7 +234,7 @@ class Model{
 
   }
   public void addFavoriteAnime(){
-
+    favoriteAnime.add(tmpAnimeDetail);
   }
   public ArrayList<String[]> getSeiyuuCharacter(String title){
     ArrayList<String[]> seiyuuCharacterList = new ArrayList<>();

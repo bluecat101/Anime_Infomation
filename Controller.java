@@ -63,6 +63,8 @@ class Controller implements ActionListener, MouseListener{
       view.displaySearchIndex();
       JPanel contentsPanel = view.getcontentsPanel();
       contentsPanel.addMouseListener(this);
+    }else if(e.getActionCommand() == "お気に入り"){
+      model.addFavoriteAnime();
     }
     
 
@@ -94,9 +96,12 @@ class Controller implements ActionListener, MouseListener{
   public void mouseReleased(MouseEvent e){
   }
   public void clickedAnime(String title){
-    String[] animeDetail = model.getAnimeDetail(title); //詳細取得
+    model.setTmpAnimeDetail(title);
+    String[] animeDetail = model.getTmpAnimeDetail(); //詳細取得
     try{
       view.displayDetail(animeDetail[0],model.getAnimeImage(Integer.parseInt(animeDetail[1])));
+      view.getFavoriteButton().addActionListener(this);
+
     }catch(Exception error){}
   }
 }

@@ -22,21 +22,49 @@ import javax.swing.JScrollPane;
 class View extends JFrame{
   private Model model;
   private SearchPanel searchPanel;
+  private FunctionPanel functionPanel;
   private SearchResultPanel searchResultPanel;
   JLabel testlabel = new JLabel("aaa");
   public View(Model m, String title){
+    GridBagLayout layout = new GridBagLayout();
+    GridBagConstraints gbc = new GridBagConstraints();
     this.setTitle(title);
     model = m;
     
-    this.setLayout(new GridLayout(1,2));
+    LineBorder border;
+
+    this.setLayout(layout);
+    gbc.fill = GridBagConstraints.BOTH;
     searchPanel = new SearchPanel(model);
-    this.add(searchPanel);
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.weightx = 1.0d;
+    gbc.weighty = 1.0d;
+    layout.setConstraints(searchPanel,gbc);
+    border = new LineBorder(Color.BLUE, 2, true);
+    searchPanel.setBorder(border);
+    
+    functionPanel = new FunctionPanel(model);
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    layout.setConstraints(functionPanel,gbc);
+    border = new LineBorder(Color.YELLOW, 2, true);
+    functionPanel.setBorder(border);
+
+
 
     searchResultPanel = new SearchResultPanel(model);
     // SearchResultPanel.setPreferredSize(new Dimension(200, 100));
-    LineBorder border = new LineBorder(Color.BLUE, 2, true);
+    gbc.gridx = 1;
+    gbc.gridy = 0;
+    gbc.gridheight = 2;
+    gbc.weightx = 2.0d;
+    layout.setConstraints(searchResultPanel,gbc);
+    border = new LineBorder(Color.BLACK, 2, true);
     searchResultPanel.setBorder(border);
-    // searchResultPanel.add(testlabel);
+    
+    this.add(searchPanel);
+    this.add(functionPanel);
     this.add(searchResultPanel);
 
 
@@ -329,7 +357,11 @@ class SearchPanel extends JPanel{
   }
   public JButton[] getSearchListLabel(){
     return b_searchSuggestion;
+  } 
+}
+class FunctionPanel extends JPanel{
+  Model model;
+  public FunctionPanel(Model m){
+    model = m;
   }
-
-  
 }
