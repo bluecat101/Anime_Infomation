@@ -1,11 +1,12 @@
 import javax.swing.*;
 // import java.awt.*;
+import java.awt.Component;
 import java.awt.event.*;
 import java.util.*;
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
 
-class Controller implements ActionListener{
+class Controller implements ActionListener, MouseListener{
   private Model model;
   private View view;
   // private Url url;
@@ -20,9 +21,6 @@ class Controller implements ActionListener{
   public void actionPerformed(ActionEvent e){
     System.out.println(e);
     System.out.println(e.getActionCommand());
-// model.getTmpSearchSuggestions().containsKey(e.getActionCommand())
-    // System
-
 
     //dアニメストア検索
     if(e.getSource() == view.getSearchButton()){
@@ -48,15 +46,7 @@ class Controller implements ActionListener{
       }
     }else if(model.getTmpSearchSuggestions().containsKey(e.getActionCommand())){
       System.out.println("click");
-      
-      String[] animeDetail = model.getAnimeDetail(e.getActionCommand()); //詳細取得
-      try{
-        view.displayDetail(animeDetail[0],model.getAnimeImage(Integer.parseInt(animeDetail[1])));
-
-      }catch(Exception error){}
-        // for(String data: animeDetail){
-        //   System.out.println(data);
-        // }
+      clickedAnime(e.getActionCommand());
       /*
       #### //-----------tidを用いた検索-----------//
       ####    // int tid = animeTIDDB.searchTID(view.getSearchText()); //TIDDB検索,すでに存在する場合??
@@ -71,9 +61,42 @@ class Controller implements ActionListener{
       // model.getAnimeDetailByDAS(Integer.parseInt(model.getTmpSearchSuggestions().get(e.getActionCommand())));
     }else if(e.getActionCommand() == "検索結果をさらに表示"){
       view.displaySearchIndex();
+      JPanel contentsPanel = view.getcontentsPanel();
+      contentsPanel.addMouseListener(this);
     }
     
 
   }
-  
+  public void mouseClicked(MouseEvent e){
+    System.out.println(e);
+    System.out.println(e.getPoint());
+    double x = e.getPoint().getX();
+    double y = e.getPoint().getY();
+    JPanel contentsPanel = view.getcontentsPanel();
+    for (Component searchAnime:contentsPanel.getComponents()){
+      if(searchAnime.getX() < x && x < (searchAnime.getX() + searchAnime.getWidth()) && searchAnime.getY() < y && y < searchAnime.getY() + searchAnime.getHeight()){
+        // System.out.println(((JLabel)((JPanel)searchAnime).getComponent(0)).getText());
+        clickedAnime(((JLabel)((JPanel)searchAnime).getComponent(0)).getText());
+      }
+    }
+    
+  }
+
+  public void mouseEntered(MouseEvent e){
+  }
+
+  public void mouseExited(MouseEvent e){
+  }
+
+  public void mousePressed(MouseEvent e){
+  }
+
+  public void mouseReleased(MouseEvent e){
+  }
+  public void clickedAnime(String title){
+    String[] animeDetail = model.getAnimeDetail(title); //詳細取得
+    try{
+      view.displayDetail(animeDetail[0],model.getAnimeImage(Integer.parseInt(animeDetail[1])));
+    }catch(Exception error){}
+  }
 }

@@ -38,15 +38,7 @@ class View extends JFrame{
     searchResultPanel.setBorder(border);
     // searchResultPanel.add(testlabel);
     this.add(searchResultPanel);
-    // Image image =null;
-    // try{
-    // image = ImageIO.read(new File("no_image.png"));
-    // ImageIcon icon = new ImageIcon(image);
-    // JLabel label = new JLabel("aaa");
-    // JPanel testPanel = new JPanel();
-    // testPanel.add(label);
-    // this.add(testPanel);
-    // }catch(Exception error){}
+
 
     this.setSize(600,400);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -90,6 +82,9 @@ class View extends JFrame{
   public void displaySearchIndex(){
     searchResultPanel.displaySearchIndex();
   }
+  public JPanel getcontentsPanel(){
+    return searchResultPanel.getcontentsPanel();
+  }
 }
 class SearchResultPanel extends JPanel{
   JPanel headerPanel = new JPanel();
@@ -111,15 +106,15 @@ class SearchResultPanel extends JPanel{
     gbc.weightx = 1.0d;
     layout.setConstraints(headerPanel,gbc);
     
-    JScrollPane scrollPane = new JScrollPane(contentsPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    JScrollPane scr_seiyuu = new JScrollPane(contentsPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     contentsPanel.setBorder(border);
     gbc.gridy = 1;
     gbc.weighty = 1.0d;
-    layout.setConstraints(scrollPane,gbc);
+    layout.setConstraints(scr_seiyuu,gbc);
 
 
     this.add(headerPanel);
-    this.add(scrollPane);
+    this.add(scr_seiyuu);
     // validate();//更新
     // repaint();
   }
@@ -129,13 +124,9 @@ class SearchResultPanel extends JPanel{
     GridBagConstraints gbc = new GridBagConstraints();
     headerPanel.setLayout(layout);
 
-    // Image image = null;
-    // image = img;
-    // ImageIcon icon = new ImageIcon(image);
-    // JLabel l_image = new JLabel(icon);
+    
     JLabel l_image = setImage(img, 0.1);
-    // Image resizeIcon = icon.getImage().getScaledInstance((int) (icon.getIconWidth() * 0.1), -1,Image.SCALE_SMOOTH);
-    // l_image.setIcon(new ImageIcon(resizeIcon));
+
     gbc.gridx = 1;
     gbc.gridy = 0;
     layout.setConstraints(l_image,gbc);
@@ -228,26 +219,6 @@ class SearchResultPanel extends JPanel{
       layout.setConstraints(searchAnime_unit,gbc);
       contentsPanel.add(searchAnime_unit);
       i++;
-      
-      
-      
-      // Image image = null;
-      // image = img;
-      // ImageIcon icon = new ImageIcon(image);
-      
-      // Image resizeIcon = icon.getImage().getScaledInstance((int) (icon.getIconWidth() * 0.1), -1,Image.SCALE_SMOOTH);
-      // l_image.setIcon(new ImageIcon(resizeIcon));
-      // gbc.gridx = 1;
-      // gbc.gridy = 0;
-      // layout.setConstraints(l_image,gbc);
-
-      // JLabel seiyuu_character_unit = new JLabel(seiyuuList.get(i+1)[0] + " : "+seiyuuList.get(i+1)[1]);
-      // gbc.gridx = 0;
-      // gbc.gridy = i;
-      
-      // layout.setConstraints(seiyuu_character_unit,gbc);
-      // contentsPanel.add(seiyuu_character_unit);
-      // System.out.println(seiyuuList.get(i+1)[0] + " : "+seiyuuList.get(i+1)[1]);
     }
     
     validate();//更新
@@ -266,6 +237,9 @@ class SearchResultPanel extends JPanel{
     Image resizeIcon = icon.getImage().getScaledInstance((int) (icon.getIconWidth() * size), -1,Image.SCALE_SMOOTH);
     l_image.setIcon(new ImageIcon(resizeIcon));
     return l_image;
+  }
+  public JPanel getcontentsPanel(){
+    return contentsPanel;
   }
 }
 class SearchPanel extends JPanel{
