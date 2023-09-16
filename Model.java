@@ -9,7 +9,11 @@ import java.io.IOException;
 import java.awt.image.BufferedImage;
 // import javax.imageio.ImageIO;
 import java.net.*;
-
+import java.io.FileWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 class Model{
   ArrayList<ArrayList<String[]>> seiyuu_character = new ArrayList<>();// 各アニメのキャラクター
@@ -19,6 +23,16 @@ class Model{
   String[] tmpAnimeDetail;
   public Model(List<String> contents){
     // searchAnimeTID(contents);
+    Path path = Paths.get("DB/favoriteAnime.csv");
+    try {
+      List<String> lines = Files.readAllLines(path, Charset.forName("UTF-8"));
+      for (int i = 0; i < lines.size(); i++) {
+        String[] data = lines.get(i).split(",");
+        favoriteAnime.add(data);  
+      }
+    } catch (IOException e) {
+        System.out.println("ファイル読み込みに失敗");
+    }
   }
   public String[] searchAnimeTitleProductionByContents(List<String> contents){
     String[] title_production = {"",""};
@@ -238,17 +252,34 @@ class Model{
 
   }
   public void addFavoriteAnime(){
+    boolean is_favorite = false;
+    for(String[] favoriteAnime_unit: favoriteAnime){
+      if(favoriteAnime_unit[0].equals(tmpAnimeDetail[0])){
+        return;
+      }
+    }
     favoriteAnime.add(tmpAnimeDetail);
-    
     try {
       BufferedImage image = ImageIO.read(new URI(tmpAnimeDetail[2]).toURL());
       ImageIO.write(image, "jpeg", new File("image/"+tmpAnimeDetail[1]+".jpg"));
     } catch (Exception e) {
       e.printStackTrace();
     }
+    writeCSVFile();
   }
   public ArrayList<String[]> getFavoriteAnime(){
     return favoriteAnime;
+  }
+  public void writeCSVFile(){
+    try{
+    FileWriter csvWriter = new FileWriter("DB/favoriteAnime.csv");
+    for(String[] favoriteAnime_unit:favoriteAnime){
+      csvWriter.append(favoriteAnime_unit[0] + "," + favoriteAnime_unit[1] + "," + favoriteAnime_unit[2] + "\n");
+    } 
+    csvWriter.close();
+    } catch (IOException e) {
+            e.printStackTrace();
+        }
   }
   public ArrayList<String[]> getSeiyuuCharacter(String title){
     ArrayList<String[]> seiyuuCharacterList = new ArrayList<>();
@@ -345,6 +376,19 @@ class Model{
       return result;  
       
     }
-  
+  public Image getImageByDB(String id){
+    Image image = null;
+    try{
+      File file = new File("image/" + id + ".jpg");
+      if(file.exists()){
+        image = ImageIO.read(new File("image/" + id + ".jpg"));
+      }else{
+        image = ImageIO.read(new File("image/no_image.png"));
+      }
+    }catch(Exception error){
+      System.out.println("画像が見つかりませんでした。");
+    }
+    return image;
+  }
 
 }

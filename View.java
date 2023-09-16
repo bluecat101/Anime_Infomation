@@ -294,16 +294,8 @@ class SearchResultPanel extends JPanel{
       p_favoriteAnime_unit.setLayout(new BorderLayout());
       JLabel l_title = new JLabel(favoriteAnime[0]);
       JLabel l_image = null;
-      try{
-        Image image = null;
-        File file = new File("image/" + favoriteAnime[1] + ".jpg");
-        if(file.exists()){
-          image = ImageIO.read(new File("image/" + favoriteAnime[1] + ".jpg"));
-        }else{
-          image = ImageIO.read(new File("image/no_image.png"));
-        }
-        l_image = setImage(image, 0.07);
-      }catch(Exception error){}
+      l_image = setImage(model.getImageByDB(favoriteAnime[1]), 0.07);
+      
       l_image.setHorizontalAlignment(JLabel.CENTER);
       p_favoriteAnime_unit.add(l_title, BorderLayout.NORTH);
       p_favoriteAnime_unit.add(l_image, BorderLayout.CENTER);
@@ -389,8 +381,6 @@ class SearchPanel extends JPanel{
       count++;
     }
     // System.out.println(panel.getComponentCount());
-
-    
     
     if (searchSuggestions.size() > 4){
       JButton moreSearchList = new JButton("検索結果をさらに表示");

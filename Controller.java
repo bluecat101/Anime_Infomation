@@ -9,11 +9,12 @@ import java.io.UnsupportedEncodingException;
 class Controller implements ActionListener, MouseListener{
   private Model model;
   private View view;
-  // private Url url;
+  private int status; // 0: 検索前, 1:　検索結果, 2: 検索内容表示, 3:検索結果をもっと見る, 4: お気に入り一覧
   private Map<String,Integer> animeTIDDB;
   public Controller(Model m, View v){
     model = m;
     view = v;
+    status = 0;
     view.getSearchButton().addActionListener(this);
     view.getFavoriteIndexButton().addActionListener(this);
     // animeTIDDB = model.getAnimeTIDDB();
@@ -25,6 +26,7 @@ class Controller implements ActionListener, MouseListener{
 
     //dアニメストア検索
     if(e.getSource() == view.getSearchButton()){
+      status = 1;
       try{
         ArrayList<String[]> searchSuggestions = model.searchDAnimeStore(URLEncoder.encode(view.getSearchText(), "UTF-8")); //[0]id,[1]title
         
@@ -46,6 +48,7 @@ class Controller implements ActionListener, MouseListener{
       } catch (UnsupportedEncodingException error) {
       }
     }else if(model.getTmpSearchSuggestions().containsKey(e.getActionCommand())){
+      status = 2;
       System.out.println("click");
       clickedAnime(e.getActionCommand());
       /*
@@ -61,13 +64,17 @@ class Controller implements ActionListener, MouseListener{
       */
       // model.getAnimeDetailByDAS(Integer.parseInt(model.getTmpSearchSuggestions().get(e.getActionCommand())));
     }else if(e.getActionCommand() == "検索結果をさらに表示"){
+      status = 3;
       view.displaySearchIndex();
       JPanel contentsPanel = view.getcontentsPanel();
       contentsPanel.addMouseListener(this);
     }else if(e.getActionCommand() == "お気に入り"){
       model.addFavoriteAnime();
     }else if(e.getActionCommand() == "お気に入り一覧"){
+      status = 4;
       view.displayFavoriteIndex();
+      JPanel contentsPanel = view.getcontentsPanel();
+      contentsPanel.addMouseListener(this);
     }
     
 
@@ -78,12 +85,23 @@ class Controller implements ActionListener, MouseListener{
     double x = e.getPoint().getX();
     double y = e.getPoint().getY();
     JPanel contentsPanel = view.getcontentsPanel();
-    for (Component searchAnime:contentsPanel.getComponents()){
-      if(searchAnime.getX() < x && x < (searchAnime.getX() + searchAnime.getWidth()) && searchAnime.getY() < y && y < searchAnime.getY() + searchAnime.getHeight()){
-        // System.out.println(((JLabel)((JPanel)searchAnime).getComponent(0)).getText());
-        clickedAnime(((JLabel)((JPanel)searchAnime).getComponent(0)).getText());
+    if(status == 3){  
+      for (Component searchAnime:contentsPanel.getComponents()){
+        if(searchAnime.getX() < x && x < (searchAnime.getX() + searchAnime.getWidth()) && searchAnime.getY() < y && y < searchAnime.getY() + searchAnime.getHeight()){
+          clickedAnime(((JLabel)((JPanel)searchAnime).getComponent(0)).getText());
+        }
+      }
+    }else if(status == 4){
+      int i = 0;
+      for (Component searchAnime:contentsPanel.getComponents()){
+        if(searchAnime.getX() < x && x < (searchAnime.getX() + searchAnime.getWidth()) && searchAnime.getY() < y && y < searchAnime.getY() + searchAnime.getHeight()){
+          String[] animeDetail = model.getFavoriteAnime().get(i);
+          clickedAnime(animeDetail[0],animeDetail[1]);
+        }
+        i++;
       }
     }
+    
     
   }
 
@@ -98,6 +116,7 @@ class Controller implements ActionListener, MouseListener{
 
   public void mouseReleased(MouseEvent e){
   }
+
   public void clickedAnime(String title){
     model.setTmpAnimeDetail(title);
     String[] animeDetail = model.getTmpAnimeDetail(); //詳細取得
@@ -106,5 +125,10 @@ class Controller implements ActionListener, MouseListener{
       view.getFavoriteButton().addActionListener(this);
 
     }catch(Exception error){}
+  }
+
+  public void clickedAnime(String title, String id){// お気に入りに入っている
+    view.displayDetail(title,model.getImageByDB(id));
+    view.getFavoriteButton().addActionListener(this);
   }
 }
