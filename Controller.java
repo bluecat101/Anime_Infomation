@@ -71,11 +71,16 @@ class Controller implements ActionListener, MouseListener{
     }else if(e.getActionCommand() == "お気に入り"){
       String title = view.getDisplayTitle();
       model.addFavoriteAnime(title);
-      clickedAnime(title); // 保留　
+      // view.displayDetail(animeDetail[0],model.getAnimeImage(Integer.parseInt(animeDetail[1])));
+      // clickedAnime(title); // 保留　
+      clickedAnime(title,model.getTmpAnimeDetail()[1]);
     }else if(e.getActionCommand() == "お気に入り解除"){
       String title = view.getDisplayTitle();
       model.deleteFavoriteAnime(title);
-      clickedAnime(title);
+      
+      // view.displayDetail(title,model.getImageByDB(model.getTmpAnimeDetail()[1]));
+      // view.getFavoriteButton().addActionListener(this);
+      clickedAnime(title,model.getTmpAnimeDetail()[1]);
     }else if(e.getActionCommand() == "お気に入り一覧"){
       status = 4;
       view.displayFavoriteIndex();
