@@ -121,6 +121,9 @@ class Model{
   }
 
   public void setTmpAnimeDetail(String title){
+    if(tmpAnimeDetail.length == 3 && tmpAnimeDetail[0].equals(title)){
+      return;
+    }
     tmpAnimeDetail = new String[3];
     int id = getDAnimeID(title);
     Url url = new Url();
@@ -137,6 +140,9 @@ class Model{
     //   }
     // }
     // return tmpAnimeDetail;
+  }
+  public void setTmpAnimeDetail(String[] anime){
+    tmpAnimeDetail = anime;
   }
   public String[] getTmpAnimeDetail(){
     return tmpAnimeDetail;
@@ -197,6 +203,9 @@ class Model{
     // return seiyuu_character;
   }
   public Image getAnimeImage(int searchID) throws IOException{
+    // if(is_existImageInFile){
+    //   return getImageByDB(String.valueOf(searchID));   
+    // }
     // System.out.println(searchID);
     Url url = new Url();
     List<String> contents = new ArrayList<String>();
@@ -219,9 +228,11 @@ class Model{
       }
     }
     return image;
-    
-
   }
+  // public boolean is_existImageInFile(int id ){
+  //   Path p = Paths.get("image/"+ id +".jpg");
+  //   Files.exists(p);
+  // }
   public void resetTmpSearchSuggetions(){
     tmpSearchSuggestions.clear();
   }
@@ -251,10 +262,10 @@ class Model{
   public void addCaracter(List<String> character){
 
   }
-  public void addFavoriteAnime(){
+  public void addFavoriteAnime(String title){
     boolean is_favorite = false;
     for(String[] favoriteAnime_unit: favoriteAnime){
-      if(favoriteAnime_unit[0].equals(tmpAnimeDetail[0])){
+      if(favoriteAnime_unit[0].equals(title)){
         return;
       }
     }
@@ -264,6 +275,15 @@ class Model{
       ImageIO.write(image, "jpeg", new File("image/"+tmpAnimeDetail[1]+".jpg"));
     } catch (Exception e) {
       e.printStackTrace();
+    }
+    writeCSVFile();
+  }
+  public void deleteFavoriteAnime(String title){
+    for(int i = 0;i < favoriteAnime.size();i++){
+      if(title.equals(favoriteAnime.get(i)[0])){
+        favoriteAnime.remove(i);
+
+      }
     }
     writeCSVFile();
   }

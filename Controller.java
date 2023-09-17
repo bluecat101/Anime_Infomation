@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 class Controller implements ActionListener, MouseListener{
   private Model model;
   private View view;
-  private int status; // 0: 検索前, 1:　検索結果, 2: 検索内容表示, 3:検索結果をもっと見る, 4: お気に入り一覧
+  private int status; // 0: 検索前, 1:　検索結果, 2: 検索内容表示, 3:検索結果をさらに表示, 4: お気に入り一覧
   private Map<String,Integer> animeTIDDB;
   public Controller(Model m, View v){
     model = m;
@@ -69,7 +69,13 @@ class Controller implements ActionListener, MouseListener{
       JPanel contentsPanel = view.getcontentsPanel();
       contentsPanel.addMouseListener(this);
     }else if(e.getActionCommand() == "お気に入り"){
-      model.addFavoriteAnime();
+      String title = view.getDisplayTitle();
+      model.addFavoriteAnime(title);
+      clickedAnime(title); // 保留　
+    }else if(e.getActionCommand() == "お気に入り解除"){
+      String title = view.getDisplayTitle();
+      model.deleteFavoriteAnime(title);
+      clickedAnime(title);
     }else if(e.getActionCommand() == "お気に入り一覧"){
       status = 4;
       view.displayFavoriteIndex();
@@ -96,7 +102,9 @@ class Controller implements ActionListener, MouseListener{
       for (Component searchAnime:contentsPanel.getComponents()){
         if(searchAnime.getX() < x && x < (searchAnime.getX() + searchAnime.getWidth()) && searchAnime.getY() < y && y < searchAnime.getY() + searchAnime.getHeight()){
           String[] animeDetail = model.getFavoriteAnime().get(i);
+          model.setTmpAnimeDetail(animeDetail);
           clickedAnime(animeDetail[0],animeDetail[1]);
+          return;
         }
         i++;
       }

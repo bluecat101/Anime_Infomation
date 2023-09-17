@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.swing.border.LineBorder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.awt.Image;
+// import java.awt.Image;
 import javax.swing.JScrollPane;
 // import java.awt.image.BufferedImage;
 
@@ -112,6 +112,9 @@ class View extends JFrame{
   public void displaySearchIndex(){
     searchResultPanel.displaySearchIndex();
   }
+  public String getDisplayTitle(){
+    return searchResultPanel.getDisplayTitle();
+  }
   public JPanel getcontentsPanel(){
     return searchResultPanel.getcontentsPanel();
   }
@@ -175,8 +178,12 @@ class SearchResultPanel extends JPanel{
     gbc.gridheight = 1;
     layout.setConstraints(l_title,gbc);
     
-
     b_favorite = new JButton("お気に入り");
+    for(String[] favoriteAnime_unit:model.getFavoriteAnime()){
+      if(title.equals(favoriteAnime_unit[0])){
+        b_favorite = new JButton("お気に入り解除");
+      }
+    }
     gbc.gridx = 2;
     gbc.gridy = 2;
     gbc.gridwidth = 1;
@@ -206,6 +213,9 @@ class SearchResultPanel extends JPanel{
   }
   public JButton getFavoriteButton(){
     return b_favorite;
+  }
+  public String getDisplayTitle(){
+   return ((JLabel)headerPanel.getComponent(1)).getText(); 
   }
   public void removeComponent(){
     headerPanel.removeAll();
@@ -275,6 +285,7 @@ class SearchResultPanel extends JPanel{
   public JPanel getcontentsPanel(){
     return contentsPanel;
   }
+  
   public void displayFavoriteIndex(){
     removeComponent();
     GridBagLayout layout = new GridBagLayout();
@@ -383,8 +394,7 @@ class SearchPanel extends JPanel{
     // System.out.println(panel.getComponentCount());
     
     if (searchSuggestions.size() > 4){
-      JButton moreSearchList = new JButton("検索結果をさらに表示");
-      // test_2.setBorder(new LineBorder(Color.RED, 2, false));
+      JButton moreSearchList = new JButton("検索結果をさらに表示(" + searchSuggestions.size() + "件)");
       gbc.gridy = count + 2;
       layout.setConstraints(moreSearchList, gbc);
       p_searchWindow.add(moreSearchList);
