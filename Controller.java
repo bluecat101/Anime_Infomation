@@ -63,7 +63,7 @@ class Controller implements ActionListener, MouseListener{
       #### //----------------------//
       */
       // model.getAnimeDetailByDAS(Integer.parseInt(model.getTmpSearchSuggestions().get(e.getActionCommand())));
-    }else if(e.getActionCommand() == "検索結果をさらに表示"){
+    }else if(e.getActionCommand().contains("検索結果をさらに表示")){
       status = 3;
       view.displaySearchIndex();
       JPanel contentsPanel = view.getcontentsPanel();
