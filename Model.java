@@ -23,16 +23,7 @@ class Model{
   String[] tmpAnimeDetail;
   public Model(List<String> contents){
     // searchAnimeTID(contents);
-    Path path = Paths.get("DB/favoriteAnime.csv");
-    try {
-      List<String> lines = Files.readAllLines(path, Charset.forName("UTF-8"));
-      for (int i = 0; i < lines.size(); i++) {
-        String[] data = lines.get(i).split(",");
-        favoriteAnime.add(data);  
-      }
-    } catch (IOException e) {
-        System.out.println("ファイル読み込みに失敗");
-    }
+      readCSVFile();
   }
   public String[] searchAnimeTitleProductionByContents(List<String> contents){
     String[] title_production = {"",""};
@@ -54,45 +45,45 @@ class Model{
     }
     return title_production;
   }
-  public void searchAnimeSeiyuuCaracterByContents(List<String> contents){
-    ArrayList<String[]> seiyuu_character_unit = new ArrayList<>();
-    Pattern pattern = Pattern.compile(":(.*):(.*)$");
-    Matcher match;
-    boolean is_seiyuu_character = false;
-    Pattern p_start = Pattern.compile("\\*キャスト");
-    Pattern p_end = Pattern.compile("</Comment>");
-    Matcher m_start, m_end;
-    for(String line: contents){
+  // public void searchAnimeSeiyuuCaracterByContents(List<String> contents){
+  //   ArrayList<String[]> seiyuu_character_unit = new ArrayList<>();
+  //   Pattern pattern = Pattern.compile(":(.*):(.*)$");
+  //   Matcher match;
+  //   boolean is_seiyuu_character = false;
+  //   Pattern p_start = Pattern.compile("\\*キャスト");
+  //   Pattern p_end = Pattern.compile("</Comment>");
+  //   Matcher m_start, m_end;
+  //   for(String line: contents){
 
-      if (is_seiyuu_character){
-        m_end = p_end.matcher(line);
-        if (m_end.find()){
-          is_seiyuu_character = false;
-          break;
-        }
+  //     if (is_seiyuu_character){
+  //       m_end = p_end.matcher(line);
+  //       if (m_end.find()){
+  //         is_seiyuu_character = false;
+  //         break;
+  //       }
 
-        match = pattern.matcher(line);
-        if(match.find()){
-          seiyuu_character_unit.add(new String[] {match.group(1), match.group(2)});
-          if(seiyuu.containsKey(match.group((2)))){
-            seiyuu.get(match.group(2)).add(match.group(1));
-          }else{
-            ArrayList<String> tmp = new ArrayList<>();
-            tmp.add(match.group(1));
-            seiyuu.put(match.group(2),tmp);
-          }
-        }
-      }else{
-        m_start = p_start.matcher(line);
-        if (m_start.find()){
-          is_seiyuu_character = true;
-        }
-      }
-    }
-    seiyuu_character.add(seiyuu_character_unit);
+  //       match = pattern.matcher(line);
+  //       if(match.find()){
+  //         seiyuu_character_unit.add(new String[] {match.group(1), match.group(2)});
+  //         if(seiyuu.containsKey(match.group((2)))){
+  //           seiyuu.get(match.group(2)).add(match.group(1));
+  //         }else{
+  //           ArrayList<String> tmp = new ArrayList<>();
+  //           tmp.add(match.group(1));
+  //           seiyuu.put(match.group(2),tmp);
+  //         }
+  //       }
+  //     }else{
+  //       m_start = p_start.matcher(line);
+  //       if (m_start.find()){
+  //         is_seiyuu_character = true;
+  //       }
+  //     }
+  //   }
+  //   seiyuu_character.add(seiyuu_character_unit);
 
-    // return seiyuu_character;
-  }
+  //   // return seiyuu_character;
+  // }
 
 
   public ArrayList<String[]> searchDAnimeStore(String searchKey) {
@@ -121,16 +112,18 @@ class Model{
   }
 
   public void setTmpAnimeDetail(String title){
-    if(tmpAnimeDetail.length == 3 && tmpAnimeDetail[0].equals(title)){
-      return;
-    }
+    // if(tmpAnimeDetail.length == 3 && tmpAnimeDetail[0].equals(title)){
+    //   return;
+    // }
     tmpAnimeDetail = new String[3];
     int id = getDAnimeID(title);
-    Url url = new Url();
-    List<String> contents = new ArrayList<String>();
-    
-    contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/ci_pc?workId=" + id);
-    searchAnimeSeiyuuCaracterByDAnimeContents(contents,id,title);
+    if(!is_existSeiyuuCharacter(title)){
+      Url url = new Url();
+      List<String> contents = new ArrayList<String>();
+      contents = url.connectHttp("https://animestore.docomo.ne.jp/animestore/ci_pc?workId=" + id);
+      searchAnimeSeiyuuCaracterByDAnimeContents(contents,id,title);
+    }
+
     tmpAnimeDetail[0] = title;
     tmpAnimeDetail[1] = String.valueOf(id);
     // for(Map.Entry<String,ArrayList<String>> data: seiyuu.entrySet()) {
@@ -146,6 +139,15 @@ class Model{
   }
   public String[] getTmpAnimeDetail(){
     return tmpAnimeDetail;
+  }
+  private boolean is_existSeiyuuCharacter(String title){
+    for(ArrayList<String[]> seiyuu_character_unit:seiyuu_character){
+      System.out.println(seiyuu_character_unit.get(0)[0]);
+      if(title.equals(seiyuu_character_unit.get(0)[0])){
+        return true;
+      }
+    }
+    return false;
   }
   //空:松岡禎丞／白:茅野愛衣
   // public void searchAnimeSeiyuuCaracterByDAnimeContents(List<String> contents){
@@ -190,10 +192,10 @@ class Model{
     for(String[] result: searchResult){
       seiyuu_character_unit.add(result);
       if(seiyuu.containsKey(result[1])){
-        seiyuu.get(result[1]).add(result[0]);
+        seiyuu.get(result[1]).add(result[0] + "("+ title +")");
       }else{
         ArrayList<String> tmp = new ArrayList<>();
-        tmp.add(result[0]);
+        tmp.add(result[0] + "("+ title +")");
         seiyuu.put(result[1],tmp);
       }
       // System.out.println("(" + result[0]+"   "+ result[1] + ")");
@@ -276,7 +278,7 @@ class Model{
     } catch (Exception e) {
       e.printStackTrace();
     }
-    writeCSVFile();
+    // writeCSVFile();
   }
   public void deleteFavoriteAnime(String title){
     for(int i = 0;i < favoriteAnime.size();i++){
@@ -285,27 +287,17 @@ class Model{
 
       }
     }
-    writeCSVFile();
+    // writeCSVFile();
   }
   public ArrayList<String[]> getFavoriteAnime(){
     return favoriteAnime;
   }
-  public void writeCSVFile(){
-    try{
-    FileWriter csvWriter = new FileWriter("DB/favoriteAnime.csv");
-    for(String[] favoriteAnime_unit:favoriteAnime){
-      csvWriter.append(favoriteAnime_unit[0] + "," + favoriteAnime_unit[1] + "," + favoriteAnime_unit[2] + "\n");
-    } 
-    csvWriter.close();
-    } catch (IOException e) {
-            e.printStackTrace();
-        }
-  }
+  
   public ArrayList<String[]> getSeiyuuCharacter(String title){
-    ArrayList<String[]> seiyuuCharacterList = new ArrayList<>();
-    for(ArrayList<String[]> anime:seiyuu_character){
-      if(title == anime.get(0)[0]){
-        seiyuuCharacterList = anime;
+    ArrayList<String[]> seiyuuCharacterList = null;
+    for(ArrayList<String[]> seiyuu_character_unit:seiyuu_character){
+      if(title.equals(seiyuu_character_unit.get(0)[0])){
+        seiyuuCharacterList = seiyuu_character_unit;
         break;
       }
     }
@@ -410,5 +402,78 @@ class Model{
     }
     return image;
   }
+  public void updateDB(){
+    writeCSVFile();
+  }
+  public void writeCSVFile(){
+    try{
+      FileWriter csvWriter = null;
+      csvWriter = new FileWriter("DB/favoriteAnime.csv");
+      for(String[] favoriteAnime_unit:favoriteAnime){
+        csvWriter.append(favoriteAnime_unit[0] + "," + favoriteAnime_unit[1] + "," + favoriteAnime_unit[2] + "\n");
+      } 
+      csvWriter.close();
 
+      csvWriter = new FileWriter("DB/seiyuu_character.csv");
+      for(ArrayList<String[]> anime_unit:seiyuu_character){
+        for(String[] seiyuu_character_unit:anime_unit){
+          csvWriter.append(seiyuu_character_unit[0] + "," + seiyuu_character_unit[1] + "," );
+        }
+        csvWriter.append("\n");
+      } 
+      csvWriter.close();
+
+      csvWriter = new FileWriter("DB/seiyuu.csv");
+      for(Map.Entry<String,ArrayList<String>> seiyuu_unit: seiyuu.entrySet()) {
+        csvWriter.append(seiyuu_unit.getKey() + ",");
+        for(String character: seiyuu_unit.getValue()){
+          csvWriter.append(character + ",");
+        }
+        csvWriter.append("\n");
+      } 
+      csvWriter.close();
+      
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+  private void readCSVFile(){
+    try {
+      Path path = null;
+      List<String> lines = null;
+      path = Paths.get("DB/favoriteAnime.csv");
+      lines = Files.readAllLines(path, Charset.forName("UTF-8"));
+      for (int i = 0; i < lines.size(); i++) {
+        String[] data = lines.get(i).split(",");
+        favoriteAnime.add(data);  
+      }
+
+      path = Paths.get("DB/seiyuu_character.csv");
+      lines = Files.readAllLines(path, Charset.forName("UTF-8"));
+      
+      for (int i = 0; i < lines.size(); i++) {
+        ArrayList<String[]> tmp = new ArrayList<>();
+        String[] data = lines.get(i).split(",");
+        for(int j = 0; j< data.length/2; j++){
+          tmp.add(new String[]{data[j*2],data[j*2+1]});
+        }
+        seiyuu_character.add(tmp);
+      }
+
+      path = Paths.get("DB/seiyuu.csv");
+      lines = Files.readAllLines(path, Charset.forName("UTF-8"));
+      for (int i = 0; i < lines.size(); i++) {
+        ArrayList<String> tmp = new ArrayList<>();
+        String[] data = lines.get(i).split(",");
+        for(int j = 1; j<data.length; j++){
+          tmp.add(data[j]);
+        }
+        seiyuu.put(data[0],tmp);
+      }
+    } catch (IOException e) {
+        System.out.println("ファイル読み込みに失敗");
+    }
+  }
 }
+// ArrayList<ArrayList<String[]>>
+// Map<String,ArrayList<String>> 

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 // import java.awt.Image;
 import javax.swing.JScrollPane;
+// import javax.swing.*;
+import java.awt.event.*;
 // import java.awt.image.BufferedImage;
 
 // import java.awt.Container;
@@ -21,7 +23,7 @@ import javax.swing.JScrollPane;
 // import java.awt.GridBagConstraints;
 // import java.awt.BorderLayout;
 
-class View extends JFrame{
+class View extends JFrame implements WindowListener{
   private Model model;
   private SearchPanel searchPanel;
   private FunctionPanel functionPanel;
@@ -71,8 +73,38 @@ class View extends JFrame{
 
 
     this.setSize(600,400);
+    this.addWindowListener(this);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setVisible(true);
+  }
+  public void windowOpened(WindowEvent e){
+    /* 処理したい内容をここに記述する */
+  }
+
+  public void windowClosing(WindowEvent e){
+    /* 処理したい内容をここに記述する */
+    model.updateDB();
+  }
+
+  public void windowClosed(WindowEvent e){
+    /* 処理したい内容をここに記述する */
+    // System.out.println("closed");
+  }
+
+  public void windowIconified(WindowEvent e){
+    /* 処理したい内容をここに記述する */
+  }
+
+  public void windowDeiconified(WindowEvent e){
+    /* 処理したい内容をここに記述する */
+  }
+
+  public void windowActivated(WindowEvent e){
+    /* 処理したい内容をここに記述する */
+  }
+
+  public void windowDeactivated(WindowEvent e){
+    /* 処理したい内容をここに記述する */
   }
   public void test(){
     // Container contentPane = getContentPane();

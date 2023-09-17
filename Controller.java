@@ -87,7 +87,7 @@ class Controller implements ActionListener, MouseListener{
   }
   public void mouseClicked(MouseEvent e){
     System.out.println(e);
-    System.out.println(e.getPoint());
+    // System.out.println(e.getPoint());
     double x = e.getPoint().getX();
     double y = e.getPoint().getY();
     JPanel contentsPanel = view.getcontentsPanel();
