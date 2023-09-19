@@ -95,10 +95,9 @@ class View extends JFrame implements WindowListener{
   public void displaySearchList(){ // 検索結果表示を返す 
     searchPanel.displaySearchList();
   }
-  
-  // public JButton[] getSearchListButton(){ // 検索結果のボタンを返す
-  //   return searchPanel.getSearchListButton();
-  // }
+  public void displaySearch(){
+    searchPanel.displaySearch();
+  }
   public void displayDetail(String title,Image img){ // アニメを表示する
     searchResultPanel.displayDetail(title,img);
   }
@@ -114,11 +113,14 @@ class View extends JFrame implements WindowListener{
   public JPanel getcontentsPanel(){ // 表示されているアニメの内容を返す
     return searchResultPanel.getcontentsPanel();
   }
+  public void displayFavoriteIndex(){ // お気に入り一覧を表示する
+    searchResultPanel.displayFavoriteIndex();
+  }
   public JButton getFavoriteIndexButton(){ // 「お気に入り一覧ボタン」を返す
     return functionPanel.getFavoriteIndexButton();
   }
-  public void displayFavoriteIndex(){ // お気に入り一覧を表示する
-    searchResultPanel.displayFavoriteIndex();
+  public JButton getSearchFunctionButton(){
+    return functionPanel.getSearchFunctionButton();
   }
 }
 class SearchResultPanel extends JPanel{ // 検索結果表示パネル
@@ -285,10 +287,8 @@ class SearchResultPanel extends JPanel{ // 検索結果表示パネル
       displayIndexUnit(favoriteAnime[0], model.getImageByDB(favoriteAnime[1]), 0.07, layout, gbc, count);
       count++;
     }
-
-
-    validate();//更新
-    repaint();
+    validate(); // 更新
+    repaint();  // 再描画
   }
   private void displayIndexUnit(String title, Image image, Double size, GridBagLayout layout, GridBagConstraints gbc,int count){
     JPanel p_favoriteAnime_unit = new JPanel(); // タイトルと画像を貼るパネルの追加
@@ -330,6 +330,21 @@ class SearchPanel extends JPanel{ // 検索画面パネル
   Model model;
 	public SearchPanel(Model m){
 		model = m;
+	}
+
+  public String getSearchText(){ // 検索内容を返す
+    return t_searchText.getText();
+  }
+
+  public JButton getSearchButton(){ // 検索用のボタンを返す
+    return b_search;
+  }
+
+  public JPanel getSearchWindowPanel(){ // 検索類のウィンドウパネルを返す
+    return p_searchWindow;
+  }
+  public void displaySearch(){
+    
     p_searchWindow.setLayout(layout);
     /* 検索内容用 */
     t_searchText = new JTextField(10);
@@ -353,20 +368,9 @@ class SearchPanel extends JPanel{ // 検索画面パネル
     p_searchWindow.add(t_searchText); // 検索内容テキストの追加
     p_searchWindow.add(b_search);     // 検索ボタンの追加
     this.add(p_searchWindow);
-	}
-
-  public String getSearchText(){ // 検索内容を返す
-    return t_searchText.getText();
+    validate(); // 更新
+    repaint();  // 再描画
   }
-
-  public JButton getSearchButton(){ // 検索用のボタンを返す
-    return b_search;
-  }
-
-  public JPanel getSearchWindowPanel(){ // 検索類のウィンドウパネルを返す
-    return p_searchWindow;
-  }
-
   public void displaySearchList(){ // 検索結果の表示
     for(int i = p_searchWindow.getComponentCount()-1; i>= 3; i--){ // すでに表示中の検索結果を削除
       p_searchWindow.remove(i);
@@ -407,17 +411,29 @@ class SearchPanel extends JPanel{ // 検索画面パネル
 class FunctionPanel extends JPanel{ // 機能パネル
   Model model;
   JButton b_favoriteIndex = new JButton("お気に入り一覧");; // お気に入り一覧ボタン
+  JButton b_search = new JButton("検索機能");; // お気に入り一覧ボタン
   public FunctionPanel(Model m){
     model = m;
     GridBagLayout layout = new GridBagLayout();
     GridBagConstraints gbc = new GridBagConstraints();
     this.setLayout(layout);
+    /* お気に入り一覧 */
     gbc.gridx = 0;
     gbc.gridy = 0;
     layout.setConstraints(b_favoriteIndex,gbc); // レイアウトの追加
-    this.add(b_favoriteIndex);
+
+    /* 検索機能 */
+    gbc.gridx = 1;
+    gbc.gridy = 0;
+    layout.setConstraints(b_search,gbc); // レイアウトの追加
+
+    this.add(b_favoriteIndex); // 「お気に入り一覧ボタン」の追加
+    this.add(b_search);        // 「検索機能ボタン」の追加
   }
-  public JButton getFavoriteIndexButton(){ // お気に入り一覧ボタンを返す
+  public JButton getFavoriteIndexButton(){ // 「お気に入り一覧ボタン」を返す
     return b_favoriteIndex;
+  }
+  public JButton getSearchFunctionButton(){ // 「検索機能ボタン」を返す
+    return b_search;
   }
 }

@@ -14,8 +14,8 @@ class Controller implements ActionListener, MouseListener{
     model = m;
     view = v;
     status = 0;
-    view.getSearchButton().addActionListener(this); // 「検索ボタン」への付与
     view.getFavoriteIndexButton().addActionListener(this); // 「お気に入り一覧ボタン」への付与
+    view.getSearchFunctionButton().addActionListener(this); // 「検索機能ボタン」への付与
   }
   
   public void actionPerformed(ActionEvent e){
@@ -65,6 +65,12 @@ class Controller implements ActionListener, MouseListener{
       view.displayFavoriteIndex();                                // お気に入りを表示する
       JPanel contentsPanel = view.getcontentsPanel();             // お気に入り一覧パネルを取得
       contentsPanel.addMouseListener(this);                       // パネルへのmouse反応の付与
+      view.displaySearch();                                       // 検索用のものを表示
+      view.getSearchButton().addActionListener(this);             // 「検索ボタン」への付与
+    }else if(e.getActionCommand() == "検索機能"){              // 「検索機能」が押されたとき
+      status = 0;                                                 // 状況の変更
+      view.displaySearch();                                       // 検索用のものを表示
+      view.getSearchButton().addActionListener(this);             // 「検索ボタン」への付与
     }
     
 
